@@ -73,24 +73,25 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 3 (full core journey: cited terms → cost → ranking flip), where feedback can still reshape slices 4–5
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Early usable behavior explored — after slice 3 (full core journey: cited terms → cost → ranking flip), where feedback can still reshape slices 4–5
+- [x] Final kick-the-tires exploration and feedback completed — the learner tried the app after slice 5 (one session covering early feedback and final review): "Se ve bien, me gusta"; asked for photo and link import → screenshot import added (slice 6); link import kept deferred
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Screenshot import tested on real pricing-page captures; parser fixes for invented prices committed (`af2e0b6`); learner chose to keep the "beta" label
+- [x] Final review complete — feedback resolved and learner confirms ready to ship ("dale, mantenemos")
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
+- [x] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: 
-Route and stops: 
-Edit outcome: 
-Reflection: 
-Activity mode: 
+Activity and evidence: focused alternative, prior practice connected — the real-screenshot OCR investigation during final review (`docs/qa.md` › real-screenshot test; `tests/adversarial.test.ts` › Real-screenshot OCR text) separated OCR misreads from parser bugs; the learner then decided to keep the beta label.
+Route and stops: reference route only (not toured): `src/App.tsx` parseOffer(text) → `src/lib/parseOffer.ts` parseOffer → `src/lib/ranking.ts` rankOptions.
+Edit outcome: not applicable — learner asked to keep moving toward shipping.
+Reflection: transfer question offered in chat; optional.
+Activity mode: prior practice + recap.
 
 ## Revisions
 - Slices 1–3 were implemented in parallel by subagents against the frozen `src/types` contracts and verified together (74/74 tests, `npm run build`, browser check of the example offer and ranking), then committed as three slice commits grouped by file; intermediate commits were not built individually — parallelization made per-slice builds of `App.tsx` impossible.
