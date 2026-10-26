@@ -72,3 +72,11 @@ The GitHub Actions workflow in `.github/workflows/deploy.yml` runs the tests, bu
 The project was planned and built with the **[Devpost Learn Skill Pack](https://github.com/challengepost/learn-ai-basics)** (skills `1-start` → `6-ship`) in Claude Code. The approved planning documents are in [`devpost/`](devpost/): [`scope.md`](devpost/scope.md), [`prd.md`](devpost/prd.md), [`spec.md`](devpost/spec.md) and the build [`checklist.md`](devpost/checklist.md). Implementation was split across parallel AI subagents (parser/billing, verified catalog/ranking, UI, adversarial QA) against frozen TypeScript contracts, then integrated and verified slice by slice. QA results: [`docs/qa.md`](docs/qa.md).
 
 The example offers in the app are fictional. Provider names belong to their owners and are used only to cite their public pricing pages.
+
+## Credits, third-party code and disclosure
+
+- Built from scratch during the hackathon submission period (first commit 26 Oct 2026); no code from earlier projects.
+- Libraries: [React](https://react.dev) (MIT), [tesseract.js](https://github.com/naptha/tesseract.js) (Apache-2.0, loaded only for the screenshot import, with its English model fetched from the jsDelivr CDN), built with Vite, TypeScript and Vitest (MIT).
+- Fonts: [Archivo](https://fonts.google.com/specimen/Archivo), [IBM Plex Sans and Plex Mono](https://fonts.google.com/specimen/IBM+Plex+Sans) via Google Fonts (SIL Open Font License).
+- Planning workflow: the [Devpost Learn Skill Pack](https://github.com/challengepost/learn-ai-basics) (MIT), included under `.claude/skills/` with its license.
+- Provider prices and terms are short verbatim quotes from each provider's public pages, cited with links in [`docs/sources.md`](docs/sources.md). Product names belong to their owners; FairFork is not affiliated with any provider.
