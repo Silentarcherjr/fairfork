@@ -9,6 +9,10 @@ Built for the Devpost **Build With AI: Basics** hackathon (October 2026).
 - **Live demo:** https://silentarcherjr.github.io/fairfork/
 - **License:** [MIT](LICENSE)
 
+| The verdict and the true cost | Side-by-side comparison with your requirements |
+|---|---|
+| ![Verdict strip and cost timeline for the fictional example offer](docs/screenshots/verdict-and-cost.jpg) | ![Best fit, verified plans and preferences](docs/screenshots/comparison.jpg) |
+
 ## What it does
 
 1. **Cited fine print.** Trial length, price, billing period, auto-renewal, cancellation and refund terms are extracted from the pasted text. Every value is highlighted where it appears; anything missing says *"Not found in the text"* — never a guess, never $0.
@@ -34,7 +38,7 @@ Open http://localhost:5173/fairfork/ and click **Analyze offer** on the pre-fill
 Other commands:
 
 ```bash
-npm test          # 134 unit, adversarial and UI tests (Vitest)
+npm test          # 138 unit, adversarial and UI tests (Vitest)
 npm run build     # type-check + production build into dist/
 npm run preview   # serve the production build
 ```
