@@ -53,7 +53,7 @@ export function TermsCard({ terms }: Props) {
             <dt>{row.label}</dt>
             {row.field.status === 'found' ? (
               <dd>
-                <span className="terms-row__value">{row.display}</span>
+                {row.display !== row.field.evidence.quote && <span className="terms-row__value">{row.display}</span>}
                 <blockquote className="clip">
                   <span className="clip__label">from your text</span>
                   <span className="clip__quote">“{row.field.evidence.quote}”</span>

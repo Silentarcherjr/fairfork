@@ -16,6 +16,8 @@ type Props = {
   variant: OptionVariant;
   /** Terms parsed from the pasted text; used for the "Your offer" card. */
   offerTerms?: OfferTerms | null;
+  /** Briefly highlight the badge (the card just became Best fit). */
+  crowned?: boolean;
 };
 
 const BADGE: Record<OptionVariant, string> = {
@@ -126,13 +128,16 @@ function SourcedTerm({ label, term }: { label: string; term: Sourced<string> | '
   );
 }
 
-export function OptionCard({ candidate, alternative, horizon, variant, offerTerms }: Props) {
+export function OptionCard({ candidate, alternative, horizon, variant, offerTerms, crowned = false }: Props) {
   const currency = candidate.currency ?? 'USD';
   const titleId = `opt-${candidate.id}`;
   const refund = alternative?.refund;
 
   return (
-    <article className={`option option--${variant}${candidate.isUserOffer ? ' option--offer' : ''}`} aria-labelledby={titleId}>
+    <article
+      className={`option option--${variant}${candidate.isUserOffer ? ' option--offer' : ''}${crowned ? ' option--crowned' : ''}`}
+      aria-labelledby={titleId}
+    >
       <header className="option__head">
         <span className={`badge badge--${variant}`}>{BADGE[variant]}</span>
         <h3 id={titleId} className="option__title">
@@ -166,7 +171,7 @@ export function OptionCard({ candidate, alternative, horizon, variant, offerTerm
       )}
 
       <details className="option__details">
-        <summary>Terms &amp; sources</summary>
+        <summary>Terms, assumptions &amp; sources</summary>
         <dl className="option__terms">
           {alternative ? (
             <>
@@ -218,15 +223,14 @@ export function OptionCard({ candidate, alternative, horizon, variant, offerTerm
             ))}
           </ul>
         )}
+        {candidate.assumptions.length > 0 && (
+          <ul className="option__assumptions" aria-label="Assumptions">
+            {candidate.assumptions.map((a, i) => (
+              <li key={i}>{a}</li>
+            ))}
+          </ul>
+        )}
       </details>
-
-      {candidate.assumptions.length > 0 && (
-        <ul className="option__assumptions" aria-label="Assumptions">
-          {candidate.assumptions.map((a, i) => (
-            <li key={i}>{a}</li>
-          ))}
-        </ul>
-      )}
 
       {alternative && (
         <footer className="option__foot">

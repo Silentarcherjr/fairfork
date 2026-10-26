@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Horizon } from './types/billing';
 import type { Preferences } from './types/ranking';
 import type { OfferTerms } from './types/terms';
@@ -16,6 +16,7 @@ import { CostTimeline, HorizonPicker } from './components/CostTimeline';
 import { PreferencesPanel } from './components/PreferencesPanel';
 import { ComparisonBoard } from './components/ComparisonBoard';
 import { AboutData } from './components/AboutData';
+import { VerdictStrip } from './components/VerdictStrip';
 
 const INITIAL_PREFS: Preferences = {
   maxMonthlyBudgetMinor: null,
@@ -45,9 +46,22 @@ export default function App() {
   );
   const rankResult = useMemo(() => rankOptions(candidates, prefs, horizon), [candidates, prefs, horizon]);
 
+  // After an explicit Analyze, bring the verdict into view (instantly under reduced motion).
+  const verdictRef = useRef<HTMLDivElement>(null);
+  const [scrollRequest, setScrollRequest] = useState(0);
+  useEffect(() => {
+    if (scrollRequest === 0) return;
+    const el = verdictRef.current;
+    if (!el || typeof el.scrollIntoView !== 'function') return;
+    const reduce =
+      typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+  }, [scrollRequest]);
+
   const analyze = () => {
     if (text.trim() === '') return;
     setAnalysis({ text, terms: parseOffer(text) });
+    setScrollRequest((n) => n + 1);
   };
   const clear = () => {
     setText('');
@@ -59,6 +73,7 @@ export default function App() {
     setText(next);
     setIsExample(true);
     setAnalysis({ text: next, terms: parseOffer(next) });
+    setScrollRequest((n) => n + 1);
   };
 
   const isStale = analysis !== null && analysis.text !== text;
@@ -102,14 +117,19 @@ export default function App() {
                   results.
                 </p>
               )}
+              <div ref={verdictRef} className="verdict-anchor">
+                <VerdictStrip timeline={timeline} result={rankResult} horizon={horizon} startDate={startDate} />
+              </div>
               <div className="analysis">
                 <div className="analysis__cost">
-                  <CostTimeline timeline={timeline} horizon={horizon} onHorizonChange={setHorizon} />
+                  <CostTimeline timeline={timeline} horizon={horizon} onHorizonChange={setHorizon} startDate={startDate} />
+                  <div className="card pressure-card">
+                    <PressureCues cues={analysis.terms.pressureCues} />
+                  </div>
                 </div>
                 <div className="analysis__text">
                   <section className="card evidence-card" aria-label="Your offer text with highlights">
                     <EvidenceText text={analysis.text} terms={analysis.terms} />
-                    <PressureCues cues={analysis.terms.pressureCues} />
                   </section>
                   <TermsCard terms={analysis.terms} />
                 </div>
@@ -131,8 +151,10 @@ export default function App() {
             </div>
           )}
 
-          <div className="compare">
-            <PreferencesPanel prefs={prefs} onChange={setPrefs} />
+          <div className="compare" id="comparison" tabIndex={-1}>
+            <div className="compare__rail">
+              <PreferencesPanel prefs={prefs} onChange={setPrefs} />
+            </div>
             <ComparisonBoard
               result={rankResult}
               alternatives={ALTERNATIVES}

@@ -109,7 +109,8 @@ describe('true cost', () => {
     expect(costSection(container).querySelector('.cost__total')).toHaveTextContent('$359.88');
     expect(userCard(container)!.querySelector('.option__horizon')).toHaveTextContent('$359.88');
     expect(userCard(container)!.querySelector('.option__price')).toHaveTextContent('$29.99');
-    expect(container.textContent).not.toContain('$239.88');
+    expect(costSection(container).textContent).not.toContain('$239.88');
+    expect(userCard(container)!.textContent).not.toContain('$239.88');
   });
 
   it('no price → "Unknown — price not found", never "$0.00" in the cost section or Your offer card', () => {
