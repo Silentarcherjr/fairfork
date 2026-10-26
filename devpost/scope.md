@@ -17,7 +17,7 @@ An individual developer deciding whether to pay for an AI coding assistant (e.g.
 Paste an offer's text → see the extracted terms highlighted in the original text → see the billing timeline and 1/3/6/12-month cost → compare against 2–3 verified plans → toggle a must-have (budget, annual billing, IDE support…) and watch the recommendation change with an explanation. They come back each time a new subscription or trial tempts them.
 
 ## Inspiration & Identity
-"Editorial decision lab": light background with deep black, coral for pressure cues, petrol green for the neutral alternative; editorial typography; clipped quotes from the original offer as evidence; quick, sober transitions; no fake charts. References (not copied): DarkScan, AgreeGuard, TermAlert, BestAIPlan.
+"Editorial decision lab": light background with deep black, coral for pressure cues, petrol green for the neutral alternative; editorial typography; clipped quotes from the original offer as evidence; quick, sober transitions; no fake charts.
 
 ## Why This Matters to the Learner
 "Many companies hide relevant information in the fine print." Comparing with other apps is always worthwhile — and it's better when everything lives in a single app.
