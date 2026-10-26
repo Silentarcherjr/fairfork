@@ -142,12 +142,15 @@ export function rankOptions(candidates: Candidate[], prefs: Preferences, horizon
       else if (value === 'unverified') unsure.push(`We couldn't verify ${FEATURE_LABELS[key]}`);
     }
 
-    if (budget !== null) {
-      if (c.effectiveMonthlyMinor === null) {
-        unsure.push('Cost not comparable: the price or billing period is unknown');
-      } else if (c.currency !== 'USD') {
-        unsure.push(`Cost not comparable: priced in ${c.currency ?? 'an unknown currency'}, budget is in USD`);
-      } else if (c.effectiveMonthlyMinor > budget) {
+    // An option whose cost can't be compared is never crowned: "lowest cost wins" needs a cost.
+    if (c.effectiveMonthlyMinor === null || comparableCost(c) === null) {
+      unsure.push(
+        c.currency !== null && c.currency !== 'USD'
+          ? `Cost not comparable: priced in ${c.currency}, the catalog is in USD`
+          : 'Cost not comparable: the price or billing period is unknown',
+      );
+    } else if (budget !== null) {
+      if (c.effectiveMonthlyMinor > budget) {
         fails.push(
           `Costs ${formatMoney(c.effectiveMonthlyMinor, 'USD')}/mo, above your ${formatMoney(budget, 'USD')} budget`,
         );
@@ -164,7 +167,7 @@ export function rankOptions(candidates: Candidate[], prefs: Preferences, horizon
     const met = required.map((k) => FEATURE_LABELS[k]);
     if (budget !== null) met.push(`≤ ${formatMoney(budget, 'USD')}/mo`);
     const period = horizon ? `over ${months(horizon)}` : 'over the selected period';
-    const head = comparableCost(qualified[0]) === null ? `Listed first ${period}; its cost could not be compared` : `Lowest cost ${period}`;
+    const head = `Lowest cost ${period}`;
     const reasons = [met.length > 0 ? `${head} among options that meet: ${met.join(', ')}` : head];
     const cost = comparableCost(qualified[0]);
     if (cost !== null) reasons.push(`${formatMoney(cost, 'USD')} in total ${period}`);

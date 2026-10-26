@@ -1,3 +1,5 @@
+import { MAX_INPUT_CHARS } from '../lib/parseOffer';
+
 type Props = {
   text: string;
   onTextChange: (text: string) => void;
@@ -40,6 +42,7 @@ export function OfferInput({
         )}
       </div>
       <textarea
+        maxLength={MAX_INPUT_CHARS}
         id="offer-text"
         className="offer-input__textarea"
         value={text}

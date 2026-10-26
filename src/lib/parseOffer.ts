@@ -126,7 +126,7 @@ const MONEY_RE = new RegExp(
   [
     `(US\\$|\\$|€|£)\\s?${MONEY_NUM}(?:\\s?(${CODES})\\b)?`,
     `\\b(${CODES})\\s?\\$?${MONEY_NUM}`,
-    `${MONEY_NUM}\\s?(${CODES})\\b`,
+    `(?<![\\d.,])${MONEY_NUM}\\s?(${CODES})\\b`,
   ].join('|'),
   'g',
 );
@@ -248,7 +248,7 @@ function sentenceField(text: string, sents: Span[], strong: RegExp | null, weak:
 // ---------- Pressure cues ----------
 
 const SCARCITY_RES: RegExp[] = [
-  new RegExp(`\\bonly\\s+${NUM}\\s+(?:spots?|seats?|places?|licen[cs]es?|left|remaining)(?:\\s+(?:left|remaining))?\\b`, 'gi'),
+  new RegExp(`\\bonly\\s+${NUM}\\s+(?:(?:spots?|seats?|places?|licen[cs]es?)\\s+)?(?:left|remaining)\\b`, 'gi'),
   /\blimited\s+(?:spots|seats|places|availability)\b/gi,
   /\b(?:a\s+)?few\s+(?:spots|seats|places)\s+(?:left|remaining)\b/gi,
   /\balmost\s+gone\b/gi,
@@ -256,7 +256,7 @@ const SCARCITY_RES: RegExp[] = [
 const URGENCY_RES: RegExp[] = [
   /\btoday\s+only\b/gi,
   /\bends\s+tonight\b/gi,
-  /\bhurry\b/gi,
+  /(?<!\bno\s)(?<!\bany\s)\bhurry\b/gi,
   /\blast\s+chance\b/gi,
   /\bexpires\s+in\b/gi,
   /\blimited[-\s]time\b/gi,
@@ -281,21 +281,49 @@ function parsePressureCues(text: string): PressureCue[] {
 
 // ---------- Main ----------
 
+// Offers are short; capping keeps worst-case regex time bounded. Offsets stay valid for the original text.
+export const MAX_INPUT_CHARS = 20000;
+
+// "$16/month billed annually": a per-month figure that is actually charged once a year.
+const BILLED_ANNUALLY_RE = /\b(?:billed|paid|charged)\s+(?:annually|yearly|once\s+a\s+year)\b/i;
+
 export function parseOffer(text: string): OfferTerms {
-  const input = typeof text === 'string' ? text : '';
+  const input = typeof text === 'string' ? text.slice(0, MAX_INPUT_CHARS) : '';
   const sents = sentences(input);
 
   const trialDays = parseTrial(input);
 
-  const best = pickPrice(priceCandidates(input, sents));
-  const price: OfferTerms['price'] = best
-    ? found(input, { amountMinor: best.amountMinor, currency: best.currency }, best.span.start, best.span.end)
-    : notFound();
+  const cands = priceCandidates(input, sents);
+  let best = pickPrice(cands);
+  let price: OfferTerms['price'] = notFound();
+  let billingPeriod: Field<BillingPeriod> | null = null;
 
-  const billingPeriod: Field<BillingPeriod> =
-    best && best.period
-      ? found(input, best.period.value, best.period.span.start, best.period.span.end)
-      : parseGlobalPeriod(input);
+  if (best && best.period?.value === 'month') {
+    const sent = sentenceContaining(sents, best.span.start);
+    const rest = sent ? input.slice(best.span.end, sent.end) : '';
+    const billed = BILLED_ANNUALLY_RE.exec(rest);
+    if (billed) {
+      const yearly = cands.find((c) => c.period?.value === 'year' && c.currency === best!.currency && c.score >= 0);
+      if (yearly) {
+        best = yearly;
+      } else {
+        // No yearly total stated: the yearly charge is 12 × the monthly figure, quoted together.
+        const billedEnd = best.span.end + billed.index + billed[0].length;
+        price = found(input, { amountMinor: best.amountMinor * 12, currency: best.currency }, best.span.start, billedEnd);
+        billingPeriod = found(input, 'year', best.span.end + billed.index, billedEnd);
+      }
+    }
+  }
+
+  if (best && price.status === 'not_found') {
+    price = found(input, { amountMinor: best.amountMinor, currency: best.currency }, best.span.start, best.span.end);
+  }
+  if (!billingPeriod) {
+    billingPeriod =
+      best && best.period
+        ? found(input, best.period.value, best.period.span.start, best.period.span.end)
+        : parseGlobalPeriod(input);
+  }
 
   const autoRenew = parseAutoRenew(input);
 
