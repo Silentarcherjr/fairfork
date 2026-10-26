@@ -7,8 +7,8 @@ import type {
   PressureCue,
 } from '../types/terms';
 
-// Rules-based, English-only extraction. Everything returned is a literal slice of the
-// input text (text.slice(start, end) === quote). Missing values are never defaulted.
+// Rules-based extraction for English and Spanish offers. Everything returned is a literal
+// slice of the input text (text.slice(start, end) === quote). Missing values are never defaulted.
 
 const NUMBER_WORDS: Record<string, number> = {
   one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
@@ -16,7 +16,20 @@ const NUMBER_WORDS: Record<string, number> = {
   eighteen: 18, nineteen: 19, twenty: 20, 'twenty-one': 21, 'twenty-two': 22, 'twenty-three': 23,
   'twenty-four': 24, 'twenty-five': 25, 'twenty-six': 26, 'twenty-seven': 27, 'twenty-eight': 28,
   'twenty-nine': 29, thirty: 30,
+  // Spanish (accents optional)
+  uno: 1, una: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9,
+  diez: 10, once: 11, doce: 12, trece: 13, catorce: 14, quince: 15, 'dieciséis': 16, dieciseis: 16,
+  diecisiete: 17, dieciocho: 18, diecinueve: 19, veinte: 20, veintiuno: 21, 'veintidós': 22,
+  veintidos: 22, 'veintitrés': 23, veintitres: 23, veinticuatro: 24, veinticinco: 25,
+  'veintiséis': 26, veintiseis: 26, veintisiete: 27, veintiocho: 28, veintinueve: 29, treinta: 30,
 };
+
+// Letters including Spanish accents; JS \b treats á, ñ… as non-word characters.
+const LETTERS = 'A-Za-z0-9_ÁÉÍÓÚÜÑáéíóúüñ';
+/** Word start / end boundaries that understand accented letters. */
+const WB = `(?<![${LETTERS}])`;
+const WE = `(?![${LETTERS}])`;
+const DIAS = `d[ií]as?`;
 
 // Longest words first so "twenty-one" wins over "twenty".
 const NUM_WORD_ALT = Object.keys(NUMBER_WORDS)
@@ -99,6 +112,14 @@ function parseTrial(text: string): Field<number> {
     new RegExp(`\\b${NUM}\\s+days?\\s+(?:for\\s+)?free\\b`, 'i'),
     // "free for seven days"
     new RegExp(`\\bfree\\s+for\\s+(?:the\\s+first\\s+)?${NUM}\\s+days?\\b`, 'i'),
+    // Spanish: "prueba gratis de 7 días", "prueba gratuita de siete días"
+    new RegExp(`${WB}prueba(?:\\s+(?:gratis|gratuita))?\\s+de\\s+${NUM}\\s+${DIAS}${WE}`, 'i'),
+    // "período de prueba (gratuito) de 14 días"
+    new RegExp(`${WB}per[ií]odo\\s+de\\s+prueba(?:\\s+(?:gratis|gratuito))?\\s+de\\s+${NUM}\\s+${DIAS}${WE}`, 'i'),
+    // "7 días de prueba (gratis)"
+    new RegExp(`${WB}${NUM}\\s+${DIAS}\\s+de\\s+prueba(?:\\s+(?:gratis|gratuita))?${WE}`, 'i'),
+    // "7 días gratis", "los primeros 30 días gratis"
+    new RegExp(`${WB}(?:los\\s+primeros\\s+)?${NUM}\\s+${DIAS}\\s+(?:gratis|gratuitos)${WE}`, 'i'),
   ];
   for (const re of patterns) {
     const hit = firstMatch(text, re);
@@ -115,33 +136,79 @@ function parseTrial(text: string): Field<number> {
       if (n !== null && n > 0) return found(text, n, hit.start, hit.end);
     }
   }
+  // Spanish weak fallback: "Después de siete días" only when the text mentions prueba / gratis.
+  if (/prueba|gratis|gratuit/i.test(text)) {
+    const hit = firstMatch(
+      text,
+      new RegExp(`${WB}despu[eé]s\\s+de\\s+(?:los\\s+primeros\\s+)?${NUM}\\s+${DIAS}${WE}`, 'i'),
+    );
+    if (hit) {
+      const n = toNumber(hit.m[1]);
+      if (n !== null && n > 0) return found(text, n, hit.start, hit.end);
+    }
+  }
   return notFound();
 }
 
 // ---------- Price, currency, billing period ----------
 
-const MONEY_NUM = `(\\d{1,3}(?:,\\d{3})+(?:\\.\\d{1,2})?|\\d+(?:\\.\\d{1,2})?)(?![\\d,.]\\d)`;
+// Amount formats: "1,200.50" (comma thousands), "19,99" (decimal comma, exactly 2 digits), "19.99".
+// The trailing guard rejects partial numbers such as "1.20" out of "1.200".
+const NUM_GUARD = `(?!\\d|[.,]\\d)`;
+const NUM_ALTS = `\\d{1,3}(?:,\\d{3})+(?:\\.\\d{1,2})?|\\d+,\\d{2}|\\d+(?:\\.\\d{1,2})?`;
+const MONEY_NUM = `(${NUM_ALTS})${NUM_GUARD}`;
+// European dot-thousands ("1.200 €", "1.200,50 €"), only with a trailing symbol.
+const MONEY_NUM_SUFFIX = `(\\d{1,3}(?:\\.\\d{3})+(?:,\\d{1,2})?|${NUM_ALTS})${NUM_GUARD}`;
 const CODES = 'USD|EUR|GBP|CAD|AUD';
 const MONEY_RE = new RegExp(
   [
+    // $19.99, US$19.99, €9, £5, $19.99 USD
     `(US\\$|\\$|€|£)\\s?${MONEY_NUM}(?:\\s?(${CODES})\\b)?`,
+    // USD 19.99
     `\\b(${CODES})\\s?\\$?${MONEY_NUM}`,
+    // 19.99 USD
     `(?<![\\d.,])${MONEY_NUM}\\s?(${CODES})\\b`,
+    // 19,99 €, 17 $, 17 US$ (symbol after the amount; not when a number follows the symbol)
+    `(?<![\\d.,])${MONEY_NUM_SUFFIX}\\s?(US\\$|\\$|€|£)(?!\\s?\\d)`,
   ].join('|'),
   'g',
 );
 const SYMBOL_CURRENCY: Record<string, string> = { US$: 'USD', $: 'USD', '€': 'EUR', '£': 'GBP' };
 
-// Period phrase directly after a price, e.g. "/month", " per year", " each month", " monthly".
-const TIED_PERIOD_RE =
-  /^\s*(?:(?:per|\/)\s*(?:user|seat|member)\s*)?(?:(?:\/\s?|per\s+|each\s+|every\s+|a\s+)(month|mo|year|yr)\b|(monthly)\b|(annually|yearly|per\s+annum)\b)/i;
+const ES_MONTH = `(?:al|por|cada)\\s+mes|\\/\\s?mes|mensual(?:es|mente)?`;
+const ES_YEAR_BILLED = `(?:facturad|cobrad|pagad)[oa]s?\\s+(?:anualmente|(?:una\\s+vez\\s+)?al\\s+año)`;
+const ES_YEAR = `(?:al|por|cada)\\s+año|\\/\\s?año|anual(?:es|mente)?|${ES_YEAR_BILLED}`;
 
-const MONTH_RE = /\/\s?(?:month|mo)\b|\bper\s+month\b|\beach\s+month\b|\bevery\s+month\b|\bmonthly\b/i;
-const YEAR_RE =
-  /\/\s?(?:year|yr)\b|\bper\s+year\b|\beach\s+year\b|\bevery\s+year\b|\bannually\b|\bbilled\s+yearly\b|\byearly\b/i;
+// Period phrase directly after a price, e.g. "/month", " per year", " each month", " monthly",
+// " al mes", " por año", " facturado anualmente".
+const TIED_PERIOD_RE = new RegExp(
+  `^\\s*(?:(?:per|\\/)\\s*(?:user|seat|member)\\s*|(?:por|\\/)\\s*(?:usuario|asiento|miembro)\\s*)?` +
+    `(?:(?:\\/\\s?|per\\s+|each\\s+|every\\s+|a\\s+)(month|mo|year|yr)\\b|(monthly)\\b|(annually|yearly|per\\s+annum)\\b` +
+    `|(${ES_MONTH})${WE}|(${ES_YEAR})${WE})`,
+  'i',
+);
+
+const MONTH_RE = new RegExp(
+  `\\/\\s?(?:month|mo)\\b|\\bper\\s+month\\b|\\beach\\s+month\\b|\\bevery\\s+month\\b|\\bmonthly\\b` +
+    `|${WB}(?:${ES_MONTH})${WE}`,
+  'i',
+);
+// Bare "anual" is left out globally ("cargo anual" is not a billing period); it still counts when tied to a price.
+const YEAR_RE = new RegExp(
+  `\\/\\s?(?:year|yr)\\b|\\bper\\s+year\\b|\\beach\\s+year\\b|\\bevery\\s+year\\b|\\bannually\\b|\\bbilled\\s+yearly\\b|\\byearly\\b` +
+    `|${WB}(?:(?:al|por|cada)\\s+año|\\/\\s?año|anualmente|${ES_YEAR_BILLED})${WE}`,
+  'i',
+);
 
 function toMinor(numStr: string): number {
-  const clean = numStr.replace(/,/g, '');
+  let clean: string;
+  if (/^\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?$/.test(numStr)) {
+    clean = numStr.replace(/\./g, '').replace(',', '.'); // 1.200,50
+  } else if (/^\d+,\d{2}$/.test(numStr)) {
+    clean = numStr.replace(',', '.'); // 19,99
+  } else {
+    clean = numStr.replace(/,/g, ''); // 1,200.50
+  }
   const [whole, frac = ''] = clean.split('.');
   return Number(whole) * 100 + Number((frac + '00').slice(0, 2));
 }
@@ -170,9 +237,12 @@ function priceCandidates(text: string, sents: Span[]): PriceCandidate[] {
     } else if (m[4] !== undefined) {
       currency = m[4].toUpperCase();
       numStr = m[5];
-    } else {
+    } else if (m[6] !== undefined) {
       currency = m[7].toUpperCase();
       numStr = m[6];
+    } else {
+      currency = SYMBOL_CURRENCY[m[9]];
+      numStr = m[8];
     }
     const start = m.index;
     const end = m.index + m[0].length;
@@ -183,20 +253,31 @@ function priceCandidates(text: string, sents: Span[]): PriceCandidate[] {
     const tied = TIED_PERIOD_RE.exec(after);
     if (tied) {
       const lead = tied[0].length - tied[0].trimStart().length;
-      const word = tied[1] ?? tied[2] ?? tied[3];
+      const value: BillingPeriod = tied[4]
+        ? 'month'
+        : tied[5]
+          ? 'year'
+          : periodFromWord(tied[1] ?? tied[2] ?? tied[3]);
       const pStart = end + lead;
-      period = { value: periodFromWord(word), span: { start: pStart, end: end + tied[0].length } };
+      period = { value, span: { start: pStart, end: end + tied[0].length } };
     }
 
     let score = 0;
     if (period) score += 10;
     const sent = sentenceContaining(sents, start);
-    if (sent && /\b(renew|renews|then|billed|after|charged)\b/i.test(text.slice(sent.start, sent.end))) score += 2;
+    if (
+      sent &&
+      /\b(renew|renews|then|billed|after|charged)\b|renueva|renovaci|luego|despu[eé]s|factura|cobra/i.test(
+        text.slice(sent.start, sent.end),
+      )
+    )
+      score += 2;
     if (amountMinor === 0) score -= 5;
-    if (/^\s*(?:due\s+)?(?:today|now)\b/i.test(after)) score -= 20;
+    if (/^\s*(?:due\s+)?(?:today|now|hoy|ahora)\b/i.test(after)) score -= 20;
     // "17%" or an OCR'd "17 $ … 174%" is a percentage, not a price; "$15 monthly credits" is an allowance.
     if (/^\s?%/.test(after)) score -= 20;
     if (/^\s*(?:monthly\s+|per\s+month\s+)?(?:total\s+)?(?:usage\s+)?credits?\b/i.test(after)) score -= 15;
+    if (/^\s*(?:en\s+)?cr[eé]ditos?/i.test(after)) score -= 15;
     out.push({ amountMinor, currency, span: { start, end }, period, score });
   }
   return out;
@@ -224,11 +305,19 @@ function parseGlobalPeriod(text: string): Field<BillingPeriod> {
 function parseAutoRenew(text: string): Field<boolean> {
   const negative =
     /\b(?:does\s+not|doesn't|doesn’t|will\s+not|won't|won’t|do\s+not|don't|don’t)\s+(?:auto(?:matically|-)?\s*)?renew\b|\bno\s+auto(?:matic)?[-\s]?renewal\b|\bnot\s+auto[-\s]?renew\w*/i;
-  const neg = firstMatch(text, negative);
+  const negativeEs = new RegExp(
+    `${WB}(?:no\\s+se\\s+renovar[aá]|no\\s+se\\s+renueva|sin\\s+renovaci[oó]n\\s+autom[aá]tica)${WE}`,
+    'i',
+  );
+  const neg = firstMatch(text, negative) ?? firstMatch(text, negativeEs);
   if (neg) return found(text, false, neg.start, neg.end);
   const positive =
     /\brenews?\s+automatically\b|\bautomatically\s+renews?\b|\bauto[-\s]?renew(?:s|al|ed|ing)?\b/i;
-  const pos = firstMatch(text, positive);
+  const positiveEs = new RegExp(
+    `${WB}(?:(?:se\\s+)?(?:renueva|renovar[aá])\\s+autom[aá]ticamente|renovaci[oó]n\\s+autom[aá]tica)${WE}`,
+    'i',
+  );
+  const pos = firstMatch(text, positive) ?? firstMatch(text, positiveEs);
   if (pos) return found(text, true, pos.start, pos.end);
   return notFound();
 }
@@ -255,6 +344,10 @@ const SCARCITY_RES: RegExp[] = [
   /\blimited\s+(?:spots|seats|places|availability)\b/gi,
   /\b(?:a\s+)?few\s+(?:spots|seats|places)\s+(?:left|remaining)\b/gi,
   /\balmost\s+gone\b/gi,
+  // Spanish
+  new RegExp(`${WB}(?:s[oó]lo\\s+quedan|quedan\\s+s[oó]lo)\\s+${NUM}\\s+(?:lugares|plazas|cupos|asientos|licencias)${WE}`, 'gi'),
+  new RegExp(`${WB}quedan\\s+(?:pocos\\s+(?:lugares|cupos|asientos)|pocas\\s+plazas)${WE}`, 'gi'),
+  new RegExp(`${WB}(?:[uú]ltimas\\s+plazas|[uú]ltimos\\s+(?:lugares|cupos))${WE}`, 'gi'),
 ];
 const URGENCY_RES: RegExp[] = [
   /\btoday\s+only\b/gi,
@@ -263,6 +356,12 @@ const URGENCY_RES: RegExp[] = [
   /\blast\s+chance\b/gi,
   /\bexpires\s+in\b/gi,
   /\blimited[-\s]time\b/gi,
+  // Spanish ("sin prisa" never matches: only the imperative "date/dese prisa", "apresúrate")
+  new RegExp(`${WB}s[oó]lo\\s+hoy${WE}`, 'gi'),
+  new RegExp(`${WB}termina\\s+esta\\s+noche${WE}`, 'gi'),
+  new RegExp(`${WB}(?:d[aá]te\\s+prisa|d[eé]se\\s+prisa|apres[uú]rate)${WE}`, 'gi'),
+  new RegExp(`${WB}[uú]ltima\\s+oportunidad${WE}`, 'gi'),
+  new RegExp(`${WB}(?:oferta\\s+)?por\\s+tiempo\\s+limitado${WE}`, 'gi'),
 ];
 
 function parsePressureCues(text: string): PressureCue[] {
@@ -288,7 +387,11 @@ function parsePressureCues(text: string): PressureCue[] {
 export const MAX_INPUT_CHARS = 20000;
 
 // "$16/month billed annually": a per-month figure that is actually charged once a year.
-const BILLED_ANNUALLY_RE = /\b(?:billed|paid|charged)\s+(?:annually|yearly|once\s+a\s+year)\b/i;
+// Spanish: "$16 al mes, facturado anualmente".
+const BILLED_ANNUALLY_RE = new RegExp(
+  `\\b(?:billed|paid|charged)\\s+(?:annually|yearly|once\\s+a\\s+year)\\b|${WB}${ES_YEAR_BILLED}${WE}`,
+  'i',
+);
 
 export function parseOffer(text: string): OfferTerms {
   const input = typeof text === 'string' ? text.slice(0, MAX_INPUT_CHARS) : '';
@@ -333,10 +436,15 @@ export function parseOffer(text: string): OfferTerms {
   const cancellation = sentenceField(
     input,
     sents,
-    /\bcancel(?:l?ation)?\b[^.]*?\b(?:any\s*time|at\s+any\s+time)\b|\b(?:you\s+(?:can|may)|to)\s+cancel\b|\bcancell?ation\b/i,
+    /\bcancel(?:l?ation)?\b[^.]*?\b(?:any\s*time|at\s+any\s+time)\b|\b(?:you\s+(?:can|may)|to)\s+cancel\b|\bcancell?ation\b|\bcancela(?:r|s)?\s+(?:cuando\s+quieras|en\s+cualquier\s+momento)|\b(?:puedes|puede|para)\s+cancelar\b|\bcancelaci[oó]n/i,
     /\bcancel/i,
   );
-  const refund = sentenceField(input, sents, null, /refund|non-refundable|money[-\s]back/i);
+  const refund = sentenceField(
+    input,
+    sents,
+    null,
+    /refund|non-refundable|money[-\s]back|reembols|devoluci[oó]n/i,
+  );
 
   // Features
   const features: Record<FeatureKey, Field<boolean>> = {
@@ -350,12 +458,22 @@ export function parseOffer(text: string): OfferTerms {
   if (billingPeriod.status === 'found' && billingPeriod.value === 'year') {
     features.annualBilling = found(input, true, billingPeriod.evidence.start, billingPeriod.evidence.end);
   } else {
-    const annual = firstMatch(input, /\bannual\s+plan\b|\bbilled\s+(?:annually|yearly)\b|\bannually\b|\/\s?(?:year|yr)\b/i);
+    const annual = firstMatch(
+      input,
+      new RegExp(
+        `\\bannual\\s+plan\\b|\\bbilled\\s+(?:annually|yearly)\\b|\\bannually\\b|\\/\\s?(?:year|yr)\\b` +
+          `|${WB}(?:plan\\s+anual|${ES_YEAR_BILLED}|anualmente)${WE}`,
+        'i',
+      ),
+    );
     if (annual) features.annualBilling = found(input, true, annual.start, annual.end);
   }
 
   if (billingPeriod.status === 'found' && billingPeriod.value === 'month') {
-    const anytime = firstMatch(input, /\bcancel\s+(?:any\s*time|at\s+any\s+time)\b/i);
+    const anytime = firstMatch(
+      input,
+      /\bcancel\s+(?:any\s*time|at\s+any\s+time)\b|\bcancela(?:r|s)?\s+(?:cuando\s+quieras|en\s+cualquier\s+momento)\b/i,
+    );
     if (anytime) features.monthlyCancel = found(input, true, anytime.start, anytime.end);
   }
 

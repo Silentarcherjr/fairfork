@@ -74,6 +74,12 @@ describe('alternatives catalog', () => {
     expect(claude.prices.find((p) => p.period === 'year')!.amountMinor).toBe(20000);
   });
 
+  it('records an explicit "monthly only" statement for Claude Max as annualBilling no', () => {
+    const max = ALTERNATIVES.find((a) => a.id === 'claude-max-5x')!;
+    expect(max.features.annualBilling.status).toBe('no');
+    expect(max.prices.map((p) => p.period)).toEqual(['month']);
+  });
+
   it('records the conflicting Devin refund sources side by side', () => {
     const devin = ALTERNATIVES.find((a) => a.id === 'devin-pro')!;
     expect(devin.refund).not.toBe('unknown');

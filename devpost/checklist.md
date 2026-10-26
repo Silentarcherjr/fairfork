@@ -71,7 +71,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Take a screenshot of any pricing text, click "Import from screenshot (beta)", check the text, then Analyze.
   Commit: `Add screenshot import (beta)`
 
-- [ ] **7. Push-to-10: Spanish offers, unknowns ledger, copy receipt, richer catalog, design nits**
+- [x] **7. Push-to-10: Spanish offers, unknowns ledger, copy receipt, richer catalog, design nits**
   Becomes usable: Spanish offers are analyzed with quotes; a "What nobody told you" panel lists every unknown; "Copy receipt" copies a shareable summary; more verified tiers make budget flips richer; hero shows the 3 steps.
   Why now: Learner asked to raise every judging criterion after the final review.
   PRD ref: `prd.md > Spanish offers`, `prd.md > Unknowns ledger ("What nobody told you")`, `prd.md > Copy receipt`
@@ -111,3 +111,4 @@ Activity mode: prior practice + recap.
 - Added slice 6 (screenshot import, beta) after the learner tried the app and found copy-pasting impractical; URL import stays deferred (needs a server, CORS/SSRF, JS-rendered pricing pages). scope/PRD/spec updated with the learner's agreement ("agrega, nada perdemos").
 - Design pass after the final review (learner approved): verdict strip, side-by-side comparison with sticky preferences, visual cost strip — the comparison started ~2,500 px down the page and the Best fit flip happened off screen.
 - Visual direction changed to "the marked-up contract" (highlighter yellow, red pen, receipt verdict, Archivo/IBM Plex) after research showed the original cream + serif + coral + Inter look is a common AI-design default; learner approved ("procede").
+- Push-to-10 slice verified together: 206/206 tests, build, and a Spanish offer in the browser (7 exact quotes, $191.88 over 12 months, comparison vs Copilot Pro); catalog now 6 verified plans (40 quotes re-checked verbatim); stricter number guard now rejects "$1.200" instead of misreading it as $1.20.

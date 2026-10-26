@@ -189,3 +189,25 @@ describe('parseOffer — untrusted input', () => {
     expectEvidenceExact(text, t);
   });
 });
+
+describe('parseOffer — decimal comma does not break English thousands', () => {
+  it.each([
+    ['$19,99 al mes', 1999],
+    ['$1,200 per year', 120000],
+    ['$12,345.67 per year', 1234567],
+    ['$1,99,000 per year', null],
+  ])('%s', (text, minor) => {
+    const t = parseOffer(text);
+    if (minor === null) {
+      // ambiguous grouping: either not found or not a silently wrong small amount
+      if (t.price.status === 'found') expect(t.price.value.amountMinor).not.toBe(199);
+    } else {
+      expect(t.price).toMatchObject({ status: 'found', value: { amountMinor: minor } });
+    }
+  });
+
+  it('"1.200" with a $ prefix is not misread as 1.20', () => {
+    const t = parseOffer('$1.200 per year');
+    if (t.price.status === 'found') expect(t.price.value.amountMinor).not.toBe(120);
+  });
+});

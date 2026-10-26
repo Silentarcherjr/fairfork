@@ -15,12 +15,14 @@ Built for the Devpost **Build With AI: Basics** hackathon (October 2026).
 
 ## What it does
 
-1. **Cited fine print.** Trial length, price, billing period, auto-renewal, cancellation and refund terms are extracted from the pasted text. Every value is highlighted where it appears; anything missing says *"Not found in the text"* — never a guess, never $0.
+1. **Cited fine print — in English or Spanish.** Trial length, price, billing period, auto-renewal, cancellation and refund terms are extracted from the pasted text. Every value is highlighted where it appears; anything missing says *"Not found in the text"* — never a guess, never $0.
 2. **Pressure cues, labeled honestly.** Phrases like "Only 3 spots left" are flagged as *potential pressure cues — not verified*, not as lies.
 3. **True cost timeline.** Charge dates and totals from a start date you choose, with every assumption written out ("assuming you don't cancel").
-4. **Verified alternatives.** A small, curated catalog — GitHub Copilot Pro, Claude Pro (monthly and annual) and Devin (formerly Windsurf) Pro — where each price, term and feature links to the official page and a verbatim quote, verified on 2026-10-26. See [`docs/sources.md`](docs/sources.md).
+4. **Verified alternatives.** A small, curated catalog — GitHub Copilot Pro and Pro+, Claude Pro (monthly and annual) and Max 5x, Devin (formerly Windsurf) Pro and Max — where each price, term and feature links to the official page and a verbatim quote, verified on 2026-10-26. See [`docs/sources.md`](docs/sources.md).
 5. **Screenshot import (beta).** Don't want to copy text? Import a screenshot of the offer: the text is read in your browser (OCR with tesseract.js) and placed in the box for you to check before analyzing — OCR can misread, so nothing is analyzed automatically.
-6. **Explained choice.** Set a monthly budget and must-haves (IDE integration, annual billing, cancel-anytime monthly). Options are sorted into **Best fit**, **Can't confirm** (a requirement we could not verify — *not verified* is not the same as *doesn't have it*) and **Doesn't meet your needs**, each with a written reason.
+6. **What nobody told you.** One ledger lists every fact that isn't stated in your offer or couldn't be verified for a plan — unknown is not the same as "no".
+7. **Copy receipt.** Copy a plain-text receipt (cost, assumptions, best fit, sources) to share before you decide.
+8. **Explained choice.** Set a monthly budget and must-haves (IDE integration, annual billing, cancel-anytime monthly). Options are sorted into **Best fit**, **Can't confirm** (a requirement we could not verify — *not verified* is not the same as *doesn't have it*) and **Doesn't meet your needs**, each with a written reason.
 
 Nothing you paste is stored or sent anywhere: the app runs entirely in your browser, with no login, no server and no API keys. The only network request is optional: the first time you use the screenshot import, the OCR engine and its English model (~10–15 MB) are downloaded from the jsDelivr CDN — your image itself never leaves the browser.
 
@@ -38,7 +40,7 @@ Open http://localhost:5173/fairfork/ and click **Analyze offer** on the pre-fill
 Other commands:
 
 ```bash
-npm test          # 138 unit, adversarial and UI tests (Vitest)
+npm test          # 206 unit, adversarial and UI tests (Vitest)
 npm run build     # type-check + production build into dist/
 npm run preview   # serve the production build
 ```
@@ -58,7 +60,7 @@ The GitHub Actions workflow in `.github/workflows/deploy.yml` runs the tests, bu
 
 ## Limitations (honest list)
 
-- **English offers with common phrasing only.** The reader uses rules, not AI; unusual wording comes back as "Not found".
+- **English and Spanish offers with common phrasing only.** The reader uses rules, not AI; unusual wording comes back as "Not found".
 - **Screenshot import is beta.** OCR can misread characters (e.g. "AI" → "Al"); always check the text before analyzing. Needs an internet connection the first time.
 - **Introductory prices** ("first month $1, then $20/month") are not modeled — the regular price is used.
 - **The catalog is curated, not live.** Prices were verified on 2026-10-26 and can change; they may vary by country and exclude taxes. Only USD prices are compared; other currencies are shown as "not comparable".

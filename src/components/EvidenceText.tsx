@@ -81,7 +81,10 @@ export function EvidenceText({ text, terms }: Props) {
           <span className="legend__swatch legend__swatch--term" aria-hidden="true" /> Detected term
         </li>
         <li>
-          <span className="legend__swatch legend__swatch--pressure" aria-hidden="true" /> Potential
+          <svg className="legend__wave" width="28" height="8" viewBox="0 0 28 8" aria-hidden="true" focusable="false">
+            <path d="M0 5 Q 2.33 1 4.67 5 T 9.33 5 T 14 5 T 18.67 5 T 23.33 5 T 28 5" fill="none" stroke="currentColor" strokeWidth="1.6" />
+          </svg>{' '}
+          Potential
           pressure cue
         </li>
       </ul>

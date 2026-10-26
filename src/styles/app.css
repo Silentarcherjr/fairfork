@@ -395,23 +395,28 @@ input[type='date'] {
 }
 
 .offer-input__textarea {
-  --ruled: 1.75rem;
+  --ruled: 1.75rem; /* line-height and rule spacing are the same value */
+  --pad-top: 0.75rem;
   display: block;
   width: 100%;
-  min-height: calc(var(--ruled) * 5 + 1.2rem);
+  min-height: calc(var(--ruled) * 5 + var(--pad-top) * 2);
   resize: vertical;
   font-family: var(--font-mono);
   font-size: 0.92rem;
   line-height: var(--ruled);
-  padding: 0.6rem 1rem 0.6rem 2.6rem;
+  padding: var(--pad-top) 1rem var(--pad-top) 2.6rem;
   border: 1px solid var(--rule);
   border-top: 2px solid var(--ink);
   border-radius: 0;
   background-color: var(--sheet);
   background-image:
     linear-gradient(90deg, transparent 1.9rem, rgba(208, 38, 28, 0.35) 1.9rem, rgba(208, 38, 28, 0.35) calc(1.9rem + 1px), transparent calc(1.9rem + 1px)),
-    repeating-linear-gradient(to bottom, transparent 0, transparent calc(var(--ruled) - 1px), #e6e8ea calc(var(--ruled) - 1px), #e6e8ea var(--ruled));
-  background-position: 0 0, 0 0.6rem;
+    linear-gradient(to bottom, transparent calc(var(--ruled) - 1px), #e2e4e6 calc(var(--ruled) - 1px));
+  background-size: 100% 100%, 100% var(--ruled);
+  background-repeat: no-repeat, repeat-y;
+  background-origin: padding-box;
+  /* Rules start where the first text line starts, so each line of text sits on a rule. */
+  background-position: 0 0, 0 var(--pad-top);
   background-attachment: local;
 }
 
@@ -804,9 +809,9 @@ input[type='date'] {
   border-radius: 0.4em 0.15em;
 }
 
-.legend__swatch--pressure {
-  height: 0.6rem;
-  border-bottom: 2px dotted var(--redpen);
+.legend__wave {
+  color: var(--redpen);
+  flex: 0 0 auto;
 }
 
 /* ---------- Quote snippets ---------- */
@@ -1642,6 +1647,170 @@ input[type='date'] {
   font-family: var(--font-mono);
   font-size: 0.78rem;
   color: var(--muted);
+}
+
+/* ---------- Hero steps ---------- */
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-4);
+  font-size: 0.95rem;
+}
+
+.steps li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.steps li + li::before {
+  content: '→';
+  color: var(--muted);
+  margin-right: var(--space-2);
+}
+
+.steps__n {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  min-width: 1.4em;
+  text-align: center;
+  line-height: 1.35;
+}
+
+.steps__key {
+  font-weight: 600;
+  background: linear-gradient(102deg, transparent 1%, var(--marker) 4%, rgba(255, 225, 77, 0.85) 94%, transparent 99%);
+  padding: 0 0.2em;
+  margin: 0 -0.1em;
+  border-radius: 0.5em 0.2em;
+}
+
+/* ---------- Receipt actions / copy ---------- */
+
+.receipt__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.receipt__actions .receipt__jump {
+  margin-top: 0;
+}
+
+.receipt__copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.receipt__copy-btn {
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  min-height: 40px;
+  padding: 0.4rem 0.8rem;
+  border-width: 1px;
+}
+
+.receipt__copy-status {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--verdict);
+}
+
+.receipt__plain {
+  flex-basis: 100%;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3);
+  max-height: 16rem;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.45;
+  background: var(--paper-2);
+  border: 1px dashed var(--ink);
+  white-space: pre;
+  user-select: all;
+}
+
+/* ---------- Unknowns ledger ---------- */
+
+.ledger {
+  margin-top: var(--space-7);
+  border-top: 2px solid var(--rule-strong);
+  padding-top: var(--space-4);
+}
+
+.ledger__count {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.ledger__groups {
+  columns: 260px 3;
+  column-gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+
+.ledger__group {
+  break-inside: avoid;
+  margin-bottom: var(--space-4);
+}
+
+.ledger__option {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--ink);
+}
+
+.ledger__list {
+  display: grid;
+}
+
+.ledger__item {
+  display: grid;
+  grid-template-columns: 1.4rem minmax(0, 1fr);
+  column-gap: var(--space-2);
+  padding: 0.4rem 0;
+  border-bottom: 1px dotted var(--rule);
+  font-size: 0.86rem;
+  line-height: 1.35;
+}
+
+.ledger__mark {
+  grid-row: span 2;
+  align-self: start;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-align: center;
+  line-height: 1.3rem;
+  height: 1.3rem;
+  border: 1px dashed var(--unverified);
+  color: var(--muted);
+  border-radius: 2px;
+}
+
+.ledger__fact {
+  font-weight: 600;
+}
+
+.ledger__detail {
+  color: var(--muted);
+  font-size: 0.8rem;
 }
 
 /* ---------- Motion ---------- */

@@ -17,6 +17,9 @@ import { PreferencesPanel } from './components/PreferencesPanel';
 import { ComparisonBoard } from './components/ComparisonBoard';
 import { AboutData } from './components/AboutData';
 import { VerdictStrip } from './components/VerdictStrip';
+import { UnknownsLedger } from './components/UnknownsLedger';
+import { collectUnknowns } from './lib/unknowns';
+import { buildReceiptText } from './lib/receiptText';
 
 const INITIAL_PREFS: Preferences = {
   maxMonthlyBudgetMinor: null,
@@ -58,6 +61,23 @@ export default function App() {
     el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
   }, [scrollRequest]);
 
+  const unknowns = useMemo(() => collectUnknowns(terms, ALTERNATIVES), [terms]);
+  const receiptText = useMemo(
+    () =>
+      analysis
+        ? buildReceiptText({
+            terms,
+            timeline,
+            rankResult,
+            horizon,
+            startDate,
+            verifiedAt: CATALOG_VERIFIED_AT,
+            alternatives: ALTERNATIVES,
+          })
+        : '',
+    [analysis, terms, timeline, rankResult, horizon, startDate],
+  );
+
   const analyze = () => {
     if (text.trim() === '') return;
     setAnalysis({ text, terms: parseOffer(text) });
@@ -90,6 +110,28 @@ export default function App() {
           </p>
           <h1 className="masthead__headline">What are you really agreeing to?</h1>
           <p className="masthead__tagline">Know the true cost. Find a better choice.</p>
+          {!analysis && (
+            <ol className="steps" aria-label="How it works">
+              <li>
+                <span className="steps__n">1</span>
+                <span>
+                  <span className="steps__key">Paste</span> an offer (or a screenshot)
+                </span>
+              </li>
+              <li>
+                <span className="steps__n">2</span>
+                <span>
+                  See the <span className="steps__key">receipt</span>
+                </span>
+              </li>
+              <li>
+                <span className="steps__n">3</span>
+                <span>
+                  Pick what <span className="steps__key">matters</span>
+                </span>
+              </li>
+            </ol>
+          )}
         </div>
         {!analysis && (
           <figure className="sample" aria-label="Annotated sample of a fictional offer">
@@ -136,7 +178,13 @@ export default function App() {
               )}
               <div className="results-top">
                 <div ref={verdictRef} className="verdict-anchor">
-                  <VerdictStrip timeline={timeline} result={rankResult} horizon={horizon} startDate={startDate} />
+                  <VerdictStrip
+                    timeline={timeline}
+                    result={rankResult}
+                    horizon={horizon}
+                    startDate={startDate}
+                    receiptText={receiptText}
+                  />
                 </div>
                 <div className="analysis__cost">
                   <CostTimeline timeline={timeline} horizon={horizon} onHorizonChange={setHorizon} startDate={startDate} />
@@ -179,6 +227,8 @@ export default function App() {
               offerTerms={terms}
             />
           </div>
+
+          <UnknownsLedger items={unknowns} analyzed={analysis !== null} />
         </div>
       </main>
 

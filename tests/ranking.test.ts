@@ -47,7 +47,15 @@ describe('buildCandidates', () => {
     const cands = buildCandidates(null, null, ALTERNATIVES, START, 12);
     expect(cands.some((c) => c.isUserOffer)).toBe(false);
     expect(cands.map((c) => c.id).sort()).toEqual(
-      ['claude-pro-month', 'claude-pro-year', 'copilot-pro-month', 'devin-pro-month'].sort(),
+      [
+        'claude-max-5x-month',
+        'claude-pro-month',
+        'claude-pro-year',
+        'copilot-pro-month',
+        'copilot-pro-plus-month',
+        'devin-max-month',
+        'devin-pro-month',
+      ].sort(),
     );
   });
 
@@ -124,6 +132,9 @@ describe('rankOptions with the verified catalog', () => {
       'claude-pro-year',
       'claude-pro-month',
       'devin-pro-month',
+      'copilot-pro-plus-month',
+      'claude-max-5x-month',
+      'devin-max-month',
     ]);
     expect(r.noneQualifies).toBe(false);
   });
@@ -133,7 +144,14 @@ describe('rankOptions with the verified catalog', () => {
     expect(r.bestFit?.id).toBe('claude-pro-year');
     expect(r.bestFit?.period).toBe('year');
     expect(r.bestFit?.reasons[0]).toBe('Lowest cost over 12 months among options that meet: Annual billing');
-    expect(r.excluded.map((c) => c.id).sort()).toEqual(['claude-pro-month', 'copilot-pro-month', 'devin-pro-month']);
+    expect(r.excluded.map((c) => c.id).sort()).toEqual([
+      'claude-max-5x-month',
+      'claude-pro-month',
+      'copilot-pro-month',
+      'copilot-pro-plus-month',
+      'devin-max-month',
+      'devin-pro-month',
+    ]);
     expect(r.excluded[0].reasons[0]).toMatch(/^Doesn't offer Annual billing/);
   });
 
@@ -167,7 +185,7 @@ describe('rankOptions with the verified catalog', () => {
     expect(r.noneQualifies).toBe(true);
     expect(r.bestFit).toBeNull();
     expect(r.qualified).toHaveLength(0);
-    expect(r.excluded).toHaveLength(4);
+    expect(r.excluded).toHaveLength(cands12.length);
     const copilot = r.excluded.find((c) => c.id === 'copilot-pro-month')!;
     expect(copilot.reasons).toEqual(['Costs $10.00/mo, above your $5.00 budget']);
   });
@@ -208,17 +226,28 @@ describe('rankOptions with the verified catalog', () => {
     const cands = buildCandidates(offer(), knownTimeline, ALTERNATIVES, START, 12);
     const r = rankOptions(cands, prefs({ ide: true }), 12);
     // $239.88 over 12 months: more than Copilot ($120) and Claude annual ($200), less than Claude monthly ($240).
-    expect(r.qualified.map((c) => c.id)).toEqual(['copilot-pro-month', 'claude-pro-year', 'user-offer', 'claude-pro-month']);
+    expect(r.qualified.map((c) => c.id)).toEqual([
+      'copilot-pro-month',
+      'claude-pro-year',
+      'user-offer',
+      'claude-pro-month',
+      'copilot-pro-plus-month',
+      'claude-max-5x-month',
+    ]);
   });
 
   it('breaks cost ties by fewer unverified features, then label', () => {
     const r = rankOptions(buildCandidates(null, null, ALTERNATIVES, START, 1), prefs(), 1);
-    // Claude monthly and Devin monthly both cost $20 over 1 month; Devin has more unverified features.
+    // $20 tie: Claude Pro monthly (0 unverified) before Devin Pro (1 unverified).
+    // $200 tie: Claude Pro annual (0 unverified) before Devin Max (2 unverified).
     expect(r.qualified.map((c) => c.id)).toEqual([
       'copilot-pro-month',
       'claude-pro-month',
       'devin-pro-month',
+      'copilot-pro-plus-month',
+      'claude-max-5x-month',
       'claude-pro-year',
+      'devin-max-month',
     ]);
   });
 

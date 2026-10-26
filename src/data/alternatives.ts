@@ -19,6 +19,7 @@ const GH_CHANGE = 'https://docs.github.com/en/copilot/how-tos/manage-your-accoun
 const CLAUDE_PRICING = 'https://claude.com/pricing';
 const CLAUDE_CANCEL = 'https://support.claude.com/en/articles/8325617-cancel-your-pro-or-max-subscription';
 const CLAUDE_REFUND = 'https://support.claude.com/en/articles/12386328-request-a-refund-for-a-paid-claude-plan';
+const CLAUDE_MAX = 'https://support.claude.com/en/articles/11049741-what-is-the-max-plan';
 const CLAUDE_CODE_PLAN = 'https://support.claude.com/en/articles/11145838-use-claude-code-with-your-pro-or-max-plan';
 
 const DEVIN_PRICING = 'https://devin.ai/pricing';
@@ -205,6 +206,181 @@ export const ALTERNATIVES: Alternative[] = [
     },
     caveats: [
       'windsurf.com/pricing now redirects to devin.ai/pricing; former Windsurf users may be on older terms.',
+      'Terms of Service: fees and applicable taxes are charged to your payment method.',
+      'Price is shown with "$" only; currency assumed to be USD.',
+      'Official refund wording conflicts between the Terms of Service and the help docs.',
+    ],
+  },
+  {
+    id: 'copilot-pro-plus',
+    provider: 'GitHub',
+    plan: 'Copilot Pro+',
+    officialUrl: GH_PLANS,
+    verifiedAt: CATALOG_VERIFIED_AT,
+    prices: [
+      {
+        period: 'month',
+        amountMinor: 3900,
+        currency: 'USD',
+        sourceUrl: GH_PLANS,
+        quote: 'Pro+ $39 per month',
+      },
+    ],
+    trial: 'unknown',
+    // The individual-billing doc covers "All individual plans—Copilot Free, Copilot Pro, Copilot Pro+, and Copilot Max".
+    autoRenew: {
+      value: true,
+      sourceUrl: GH_BILLING,
+      quote:
+        'your initial billing cycle will run from 3 September until and including 2 October, and then on the same days of subsequent months.',
+    },
+    cancellation: {
+      value: 'Cancel anytime; the cancellation takes effect at the end of the current billing cycle.',
+      sourceUrl: GH_CHANGE,
+      quote: 'Select Cancel Copilot Pro/Copilot Pro+/Copilot Max to cancel your plan at the end of your current billing cycle.',
+    },
+    refund: {
+      value:
+        'Only stated case: a prorated refund when a company (Business/Enterprise) seat replaces your Pro, Pro+ or Max plan. No general refund policy found.',
+      sourceUrl: GH_BILLING,
+      quote: "You will receive a prorated refund for any remaining portion of your personal plan's current billing cycle.",
+    },
+    features: {
+      ide: {
+        status: 'yes',
+        sourceUrl: GH_PLANS,
+        quote: 'Editors and IDEs See all the supported editors Free plan Included Pro plan Included Pro+ plan Included',
+      },
+      annualBilling: { status: 'unverified' },
+      monthlyCancel: {
+        status: 'yes',
+        sourceUrl: GH_CHANGE,
+        quote: 'Select Cancel Copilot Pro/Copilot Pro+/Copilot Max to cancel your plan at the end of your current billing cycle.',
+      },
+    },
+    caveats: [
+      'GitHub docs mention annual Copilot plans only as "legacy"; no annual price for new subscribers was found.',
+      'Usage beyond included AI credits is metered; the extra-usage budget is set in US dollars.',
+      'No tax or regional pricing statement was found on the pages checked.',
+    ],
+  },
+  {
+    id: 'claude-max-5x',
+    provider: 'Anthropic',
+    plan: 'Claude Max 5x',
+    officialUrl: CLAUDE_PRICING,
+    verifiedAt: CATALOG_VERIFIED_AT,
+    prices: [
+      {
+        period: 'month',
+        amountMinor: 10000,
+        currency: 'USD',
+        sourceUrl: CLAUDE_MAX,
+        quote: 'Max 5x: $100 per month',
+        note: 'Web subscription price; mobile pricing may vary by app platform.',
+      },
+    ],
+    trial: 'unknown',
+    autoRenew: {
+      value: true,
+      sourceUrl: CLAUDE_CANCEL,
+      quote:
+        'To avoid being charged for your next billing period, cancel your subscription at least 24 hours before your next billing date.',
+    },
+    cancellation: {
+      value: 'Cancel anytime; the plan stays active until the end of the current billing period.',
+      sourceUrl: CLAUDE_CANCEL,
+      quote:
+        'Your cancellation will take effect at the end of your current billing period and you can continue using your paid plan until then.',
+    },
+    refund: {
+      value:
+        'Non-refundable except as the Consumer Terms or law provide; in the EEA and UK, a prorated refund within 14 days of purchase.',
+      sourceUrl: CLAUDE_REFUND,
+      quote:
+        'Except as expressly provided in our Consumer Terms of Service or where required by law, all payments are non-refundable.',
+    },
+    features: {
+      ide: {
+        status: 'yes',
+        sourceUrl: CLAUDE_CODE_PLAN,
+        quote:
+          'Your Pro or Max plan also covers Claude Code in supported IDEs, including VS Code, Cursor and other VS Code forks, and JetBrains IDEs',
+      },
+      annualBilling: {
+        status: 'no',
+        sourceUrl: CLAUDE_MAX,
+        quote: 'The Max plan is currently available as a monthly subscription only.',
+      },
+      monthlyCancel: {
+        status: 'yes',
+        sourceUrl: CLAUDE_CANCEL,
+        quote:
+          'You may cancel your Pro or Max plan subscription at any time by following the cancellation instructions for the platform you signed up on.',
+      },
+    },
+    caveats: [
+      'Prices shown don’t include applicable tax (per the pricing page).',
+      'Max 20x ($200/mo) also exists; only Max 5x is listed here.',
+      'EEA and UK: a refund is possible within 14 days of purchase, prorated according to use.',
+      'Mobile (app store) pricing may differ from the web price.',
+    ],
+  },
+  {
+    id: 'devin-max',
+    provider: 'Cognition',
+    plan: 'Devin (formerly Windsurf) Max',
+    officialUrl: DEVIN_PRICING,
+    verifiedAt: CATALOG_VERIFIED_AT,
+    prices: [
+      {
+        period: 'month',
+        amountMinor: 20000,
+        currency: 'USD',
+        sourceUrl: DEVIN_PRICING,
+        quote: 'Max NEW $200 per month',
+        note: 'Currency shown only as "$"; USD assumed.',
+      },
+    ],
+    trial: {
+      value: null,
+      sourceUrl: DEVIN_USAGE,
+      quote: 'Free trials of paid plans are not currently offered, and support cannot apply one to your account.',
+    },
+    autoRenew: {
+      value: true,
+      sourceUrl: COGNITION_TERMS,
+      quote:
+        'will automatically renew for successive periods of the same duration unless you cancel the Service or we terminate it.',
+    },
+    cancellation: {
+      value: 'Cancel anytime; you keep access until the end of the current billing period, then move to Free.',
+      sourceUrl: DEVIN_USAGE,
+      quote:
+        'Upon canceling, you’ll still have access to your plan’s features until the end of the current billing period.',
+    },
+    refund: {
+      value: 'Terms of Service: all payments are non-refundable, except as the Terms provide or law requires.',
+      sourceUrl: COGNITION_TERMS,
+      quote: 'Except as expressly provided in these Terms or where required by law, all payments are non-refundable.',
+      conflict: {
+        value: 'Help docs: you can request a refund before using the subscription.',
+        sourceUrl: DEVIN_USAGE,
+        quote: 'you can request a refund before using the subscription if you change your mind.',
+      },
+    },
+    features: {
+      ide: { status: 'unverified' },
+      annualBilling: { status: 'unverified' },
+      monthlyCancel: {
+        status: 'yes',
+        sourceUrl: DEVIN_USAGE,
+        quote:
+          'As a paid individual user, you can cancel your plan at any time by browsing to the app.devin.ai/settings/plans page.',
+      },
+    },
+    caveats: [
+      'Max is "Everything in Pro, plus: Significantly higher quotas" per the pricing page.',
       'Terms of Service: fees and applicable taxes are charged to your payment method.',
       'Price is shown with "$" only; currency assumed to be USD.',
       'Official refund wording conflicts between the Terms of Service and the help docs.',
