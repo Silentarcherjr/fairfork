@@ -88,6 +88,10 @@ PRD ref: `prd.md > Screens and Layout`, `prd.md > States and Boundaries`.
 `readTextFromImage(file, onProgress)` lazy-loads **tesseract.js 5.1.1** (dynamic `import()`, so the main bundle and first load are unaffected) and runs English OCR in a Web Worker in the browser. Tesseract downloads its worker, WASM core and English model (~10–15 MB) from the jsDelivr CDN on first use; the image itself never leaves the browser. `ImageImport` renders the file input, progress and errors and calls `onText(text)`; `App` puts the text in the box, clears the example flag and shows the review notice. No auto-analyze. Docs: https://github.com/naptha/tesseract.js
 PRD ref: `prd.md > Screenshot import (beta)`.
 
+### Design pass — verdict strip, comparison grid, cost strip
+`VerdictStrip` (new, `src/components/VerdictStrip.tsx`) reads the `Timeline` and `RankResult.bestFit`; difference = offer horizon cost − best-fit horizon cost, shown only when both are known and in USD, always phrased as "if you switch" with the start-date assumption. `ComparisonBoard` renders a responsive grid (≥ 1100 px: preferences sticky on the left, cards in columns); `OptionCard` folds terms/sources into `<details>`; the Best fit card animates position changes (FLIP, disabled under reduced motion). `CostTimeline` shows one bar per charge with the list in `<details>`.
+PRD ref: `prd.md > Screens and Layout`.
+
 ### App shell — `src/App.tsx`, `src/main.tsx`
 Holds state (text, analyzed terms, startDate, horizon, preferences) and wires the pure functions to components. Nothing persisted.
 

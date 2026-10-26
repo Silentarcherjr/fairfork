@@ -23,7 +23,8 @@ Source: `scope.md > The Core Loop`, `scope.md > What "Working" Looks Like`.
 ## Screens and Layout
 One page, top to bottom (no navigation, no other screens):
 - **Header + input:** headline, offer textarea, start-date field, "Analyze offer", "Clear".
-- **Desktop (wide):** left column = original text with highlights + terms card; right column = cost timeline. Below, full width = comparison board with the preferences panel above it.
+- **Verdict strip (after Analyze):** one line at the top of the results — what the offer costs over the horizon and the current Best fit with its conditional difference ("if you switch"), plus the assumption.
+- **Desktop (wide):** left column = original text with highlights + terms card; right column = cost timeline as a visual strip of charges (full list collapsible). Below: preferences in a sticky side panel next to a side-by-side grid of compact option cards (details folded), so toggling a must-have shows the Best fit badge move on the same screen.
 - **Mobile (≥ 360 px):** order is true cost → terms/fine print → alternatives + preferences → sources. No horizontal scrolling.
 - **Footer:** "About the data" — catalog is curated (not live search), dates of verification, prices may vary by country/taxes, not financial or legal advice.
 
@@ -93,6 +94,7 @@ Source: `scope.md > The Core Loop`.
 - **"Not verified" ≠ "doesn't have it"**: unverified options are kept in a separate "Can't confirm" group, never excluded silently and never crowned (learner adopted recommendation).
 - **The pasted offer competes in the ranking** as "Your offer", judged only by its own text (learner adopted recommendation), so the board answers "should I switch?".
 - Visual direction carried forward from the learner's brief.
+- **Design pass after final review** (learner: "dale, procede"): verdict strip, side-by-side comparison with sticky preferences, visual cost strip — so the kernel's "oh, that's cool" moment is visible without scrolling.
 - **Screenshot import added as beta** after trying the app ("agrega, nada perdemos"), accepting the agent's caveat: it only fills the text box for review, so the cited-quote guarantee still applies to the text the user confirms.
 
 ## What We're Building
