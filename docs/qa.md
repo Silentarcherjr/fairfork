@@ -1,6 +1,16 @@
-# FairFork — QA matrix (Agent D, adversarial QA)
+# FairFork — QA matrix (adversarial QA and final verification)
 
-Run on 2026-10-26: `npm test` → **6 files, 125 passed, 2 todo (known bugs)**; `npm run build` green.
+## Final verification — 2026-10-26
+
+- **226 automated tests passed** according to the final development checklist. The latest GitHub Actions run also completed `npm test` and `npm run build` successfully.
+- The initial adversarial QA pass, preserved below for traceability, reported 125 passed and 2 todo **at that time**, before fixes and additional tests.
+- **Fixed:** BUG-1 (pressure-cue false positives), BUG-2 (monthly equivalent billed annually), PERF-1 (long-input performance), and O-1 (unverifiable cost cannot be Best fit).
+- **Known limitation:** BUG-3 (introductory prices) remains unsupported and is disclosed in the README.
+- Later real-browser mobile, keyboard, desktop, and visual checks passed, as recorded in the **Manual browser checks** section.
+
+## Initial adversarial QA snapshot (historical)
+
+Original run on 2026-10-26: `npm test` → **6 files, 125 passed, 2 todo at the time**; `npm run build` green.
 New files: `tests/adversarial.test.ts` (unit + seeded fuzz), `tests/ui.test.tsx` (rendered `<App />`).
 Abbreviations: **ADV** = `tests/adversarial.test.ts`, **UI** = `tests/ui.test.tsx`; existing suites by file name.
 
@@ -12,7 +22,7 @@ Abbreviations: **ADV** = `tests/adversarial.test.ts`, **UI** = `tests/ui.test.ts
 | Every detected value shows the exact quote, highlighted in the original text | UI › "every rendered <mark> text exists literally in the input, and each found term quote is highlighted"; ADV › fuzz "every evidence slice equals its quote…", "rendered highlights: every <mark> is a literal slice…"; parseOffer.test › "every evidence slice equals its quote" | pass |
 | Anything not present shows "Not found in the text" — no assumed 7 days, no $0 | UI › "nothing recognizable…", "no trial → no 7-day default…", "no price → Unknown…never $0.00"; ADV › "PRD: missing values are never defaulted" | pass |
 | Pressure phrases labeled "Potential pressure cue — not verified", never "lie"/"scam" | UI › "\"only 3 left\" is labeled as an unverified pressure cue; no lie/scam/fraud anywhere"; ADV › "\"only 3 left\" is a scarcity cue with exact offsets" | pass |
-| Text with no pressure phrases shows none (no invented findings) | UI › "neutral text → No pressure cues detected"; ADV › "neutral text has no pressure cues" (4 cases) | pass for typical neutral text — **BUG-1** (false positives, see below), tracked as `it.todo` |
+| Text with no pressure phrases shows none (no invented findings) | UI › "neutral text → No pressure cues detected"; ADV › "neutral text has no pressure cues" (4 cases) | initially failed for edge cases; **BUG-1 fixed** later (see **Fix status**) |
 | Pasted HTML/script appears as plain inert text | UI › "pasted HTML/script is rendered as inert text: no img/script elements are created"; ADV › fuzz render (includes `<script>`/`<img onerror>` tokens) | pass |
 
 ### True cost timeline
@@ -69,7 +79,9 @@ Abbreviations: **ADV** = `tests/adversarial.test.ts`, **UI** = `tests/ui.test.ts
 ### Fuzz
 ADV › "fuzz: parseOffer on ~200 seeded random/garbage strings" (seed 20261026, 210 inputs: random chars incl. emoji/NBSP/zero-width, keyword soup, mutated examples): never throws; all evidence offsets in bounds and `text.slice(start,end) === quote`; trial positive integer; cents non-negative integers; known currency; cues sorted and non-overlapping; timeline total = sum of charges for every horizon; rendered `<mark>`s are literal slices and the evidence body text equals the input exactly. **All pass.**
 
-## Bugs and observations (src not modified)
+## Original bugs and observations (historical)
+
+These findings describe the initial QA state, not the final one. Refer to **Fix status** below.
 
 **BUG-1 — pressure-cue false positives on neutral text** (`src/lib/parseOffer.ts`, `SCARCITY_RES[0]` and `URGENCY_RES` `/\bhurry\b/`). Violates "Text with no pressure phrases shows none".
 - Input `The plan includes only 2 seats per account.` → expected no cues; actual scarcity cue `"only 2 seats"`.
@@ -86,7 +98,7 @@ ADV › "fuzz: parseOffer on ~200 seeded random/garbage strings" (seed 20261026,
 
 **O-1 (design question) — unknown-cost "Your offer" can be crowned Best fit.** Input `Works in VS Code. Annual plan available. Monthly billing — cancel anytime.` with all three must-haves and no budget → Best fit = "Your offer" with cost Unknown; reason reads "Listed first over 12 months; its cost could not be compared…". It is honestly labeled, but the PRD rule is "lowest cost … wins"; consider sending unknown-cost options to "Can't confirm" whenever they would be the winner. Documented by ADV test.
 
-## Coverage gaps
+## Initial coverage gaps (later manual checks below)
 - Visual/layout criteria (360 px no horizontal scroll, mobile order, desktop columns, three feature looks visually distinct, contrast, focus ring) need a real browser — pending orchestrator check.
 - jsdom can't test real keyboard Tab order or `<details>` toggling by keyboard; checked statically only.
 - "Refreshing clears the text" verified by code review (no localStorage/sessionStorage usage), not by a reload test.
@@ -122,6 +134,6 @@ Real tesseract.js OCR on screenshots captured in the built-in browser, then `par
 | GitHub Copilot plans — Pro card (dark) | "$1 0 usD" | **$10 / month** ✔ (after fixes) | split digits re-joined; "$15 monthly credits" no longer wins |
 | GitHub Copilot plans — Free card (dark) | "$0" → "SO" | not found | nothing invented |
 | Devin pricing — Pro card (light) | large "$20" not read | not found | OCR misses very large display digits |
-| Claude pricing (Spanish locale) | "17 $" → "174%" | not found ✔ (was **$174** before the fix) | English-only parser; percentages never parsed as prices |
+| Claude pricing (Spanish locale) | "17 $" → "174%" | not found ✔ (was **$174** before the fix) | English OCR model; percentages never parsed as prices |
 
 Fixes from this test: percentages are never prices; "credits" allowances are de-prioritized; "per user / month" counts as a period; OCR text re-joins split price digits. Result: no invented prices on any screenshot; large display prices on some pages are still missed. The feature stays labeled **beta** and never analyzes automatically.
