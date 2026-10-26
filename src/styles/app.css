@@ -1180,3 +1180,44 @@ input:focus-visible {
     transform: none;
   }
 }
+
+/* ---------- Screenshot import (beta) ---------- */
+
+.image-import {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.image-import__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.image-import__button:focus-within {
+  outline: 3px solid var(--petrol);
+  outline-offset: 2px;
+}
+
+.image-import__button.is-busy {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.tag--beta {
+  border: 1.5px solid var(--petrol);
+  color: var(--petrol);
+  background: var(--paper);
+}
+
+.image-import__status {
+  margin: 0;
+}
+
+.image-import__error {
+  color: var(--coral-ink);
+}

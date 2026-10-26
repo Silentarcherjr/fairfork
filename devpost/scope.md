@@ -40,5 +40,5 @@ URL input via a safe allowlisted fetch, AI-assisted extraction server-side, "As 
 - Live web search / crawling — can't be done reliably and safely today; the UI must never claim "live".
 - Universal "any contract / any website" analysis — comparisons are only meaningful within one niche.
 - Login, payments, stored personal data — not needed to prove the kernel; adds risk.
-- OCR/screenshots — extra dependency, not core.
+- ~~OCR/screenshots~~ — moved into the POC as a **beta** import after the build checkpoint (learner: "agrega, nada perdemos"); it only fills the text box for review, so quotes stay exact.
 - Legal/financial verdicts ("this is illegal / a scam") — FairFork shows evidence and tradeoffs, not advice.

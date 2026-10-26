@@ -1,4 +1,5 @@
 import { MAX_INPUT_CHARS } from '../lib/parseOffer';
+import { ImageImport } from './ImageImport';
 
 type Props = {
   text: string;
@@ -78,6 +79,7 @@ export function OfferInput({
           )}
         </div>
       </div>
+      <ImageImport onText={onTextChange} />
       <p id="offer-hint" className="hint" aria-live="polite">
         {isEmpty
           ? 'Paste an offer to analyze'

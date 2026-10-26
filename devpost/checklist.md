@@ -61,6 +61,16 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Follow the README's run steps yourself from a fresh terminal and confirm the app opens.
   Commit: `Add README, license and Pages deploy workflow`
 
+- [x] **6. Import an offer from a screenshot (beta)**
+  Becomes usable: "Import from screenshot (beta)" reads an image in the browser and fills the text box for review, with a notice that OCR can misread; nothing is analyzed automatically.
+  Why now: Added at the learner's request after trying the app — copy-pasting offers is the main friction.
+  PRD ref: `prd.md > Screenshot import (beta)`
+  Spec ref: `spec.md > Screenshot import (beta) — src/components/ImageImport.tsx, src/lib/ocr.ts`
+  Build: `src/lib/ocr.ts` (lazy tesseract.js 5.1.1), `ImageImport` inside `OfferInput`, styles, tests with the OCR module mocked.
+  Verify (mechanical): `npm test` (134 passed) and `npm run build` (tesseract in a separate lazy chunk); real OCR in the browser on a generated screenshot filled the box, then Analyze highlighted 7 terms and computed $191.88 over 12 months.
+  Learner check: Take a screenshot of any pricing text, click "Import from screenshot (beta)", check the text, then Analyze.
+  Commit: `Add screenshot import (beta)`
+
 ## Hands-on Checkpoints
 
 - [ ] Early usable behavior explored — after slice 3 (full core journey: cited terms → cost → ranking flip), where feedback can still reshape slices 4–5
@@ -87,4 +97,4 @@ Activity mode:
 - Catalog re-verification found Claude Pro's IDE support verbatim on an official support page, so the "IDE integration" must-have no longer flips the winner (Copilot was already cheapest); it now moves Devin Pro to "Can't confirm". The demo flip relies on "Annual billing" (Copilot Pro → Claude Pro annual) and the budget.
 - Slice 4 was built while the early checkpoint was pending (it only hardened existing behavior). QA found and fixed: false pressure cues ("only 2 seats per account", "No hurry"), "$16/month billed annually" read as monthly billing, slow parsing on very large input (now capped at 20,000 characters), and an offer with unknown cost being crowned Best fit (now "Can't confirm"). Introductory prices remain a documented limitation.
 - Slice 5's live URL can only be verified after the public repo is pushed and Pages is enabled in `6-ship`; locally `npm run build && vite preview` serves the app at `/fairfork/`.
-
+- Added slice 6 (screenshot import, beta) after the learner tried the app and found copy-pasting impractical; URL import stays deferred (needs a server, CORS/SSRF, JS-rendered pricing pages). scope/PRD/spec updated with the learner's agreement ("agrega, nada perdemos").

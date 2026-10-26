@@ -46,6 +46,13 @@ Detects, from the pasted text only: trial length, price, currency, billing perio
 - [ ] Text with no pressure phrases shows none (no invented findings).
 - [ ] Pasted HTML/script appears as plain inert text.
 
+### Screenshot import (beta)
+Source: learner request at the build checkpoint — copy-pasting offers is friction.
+- [ ] Next to the text box, "Import from screenshot (beta)" accepts an image file; text is read in the browser and the image is never uploaded anywhere.
+- [ ] While reading, progress is shown; the result **fills the text box only** — it is not analyzed automatically.
+- [ ] A notice says "Text read from an image — check it against the screenshot before analyzing; OCR can misread." The example label disappears.
+- [ ] If reading fails or finds no text, a calm error appears and the existing text is untouched.
+
 ### True cost timeline
 Source: `scope.md > What "Working" Looks Like`.
 - [ ] With "7-day trial, then $19.99/month, renews automatically" and start date D, the first charge is shown on D + 7 days, labeled with the assumption ("assuming you don't cancel").
@@ -86,6 +93,7 @@ Source: `scope.md > The Core Loop`.
 - **"Not verified" ≠ "doesn't have it"**: unverified options are kept in a separate "Can't confirm" group, never excluded silently and never crowned (learner adopted recommendation).
 - **The pasted offer competes in the ranking** as "Your offer", judged only by its own text (learner adopted recommendation), so the board answers "should I switch?".
 - Visual direction carried forward from the learner's brief.
+- **Screenshot import added as beta** after trying the app ("agrega, nada perdemos"), accepting the agent's caveat: it only fills the text box for review, so the cited-quote guarantee still applies to the text the user confirms.
 
 ## What We're Building
 Everything under Features and Behavior and States and Boundaries above: pasted-text input with fictional example, cited extraction, cost timeline with horizons, 3-plan verified catalog, preferences + explained ranking, responsive single page, no login.

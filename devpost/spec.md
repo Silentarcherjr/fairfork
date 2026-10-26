@@ -84,6 +84,10 @@ PRD ref: `prd.md > Preferences and explained ranking`.
 `OfferInput` (textarea, start date, Analyze, Clear, "fictional example" label), `EvidenceText` (escaped text + `<mark>` ranges, never `dangerouslySetInnerHTML`), `TermsCard`, `PressureCues`, `CostTimeline` (horizon buttons 1/3/6/12), `PreferencesPanel` (budget input + 3 must-have checkboxes), `ComparisonBoard` + `OptionCard` (price, billing basis, horizon cost, terms, features, source link, verified date, reasons), `AboutData` footer.
 PRD ref: `prd.md > Screens and Layout`, `prd.md > States and Boundaries`.
 
+### Screenshot import (beta) — `src/components/ImageImport.tsx`, `src/lib/ocr.ts`
+`readTextFromImage(file, onProgress)` lazy-loads **tesseract.js 5.1.1** (dynamic `import()`, so the main bundle and first load are unaffected) and runs English OCR in a Web Worker in the browser. Tesseract downloads its worker, WASM core and English model (~10–15 MB) from the jsDelivr CDN on first use; the image itself never leaves the browser. `ImageImport` renders the file input, progress and errors and calls `onText(text)`; `App` puts the text in the box, clears the example flag and shows the review notice. No auto-analyze. Docs: https://github.com/naptha/tesseract.js
+PRD ref: `prd.md > Screenshot import (beta)`.
+
 ### App shell — `src/App.tsx`, `src/main.tsx`
 Holds state (text, analyzed terms, startDate, horizon, preferences) and wires the pure functions to components. Nothing persisted.
 
@@ -179,7 +183,8 @@ fairfork/
 ```
 
 ## External Services and Dependencies
-- **None at runtime.** No API calls, no keys, no cost.
+- **None for the core journey.** No API calls, no keys, no cost.
+- **Screenshot import (beta) only:** tesseract.js 5.1.1 fetches its worker/core/English model from cdn.jsdelivr.net on first use (free, no key). Offline, the import shows an error; everything else works.
 - Google Fonts stylesheet (optional; system font fallback if blocked).
 - GitHub Pages + GitHub Actions (free for public repos). Docs: https://docs.github.com/en/pages, https://vite.dev/guide/static-deploy#github-pages
 - Official provider pages are read by humans/agents at build time only, never fetched by the app.
@@ -188,6 +193,7 @@ fairfork/
 - **Offer phrasing the rules don't recognize** → fields show "Not found in the text", cost "Unknown — price not found"; alternatives still visible. README states the English-phrasing limitation.
 - **A catalog fact can't be re-verified in the browser** → stored as `unverified`/`'unknown'`, never guessed; ranking puts that plan under "Can't confirm" when that fact matters.
 - **No option meets the requirements** → "No option meets all your requirements" with each option's eliminating reason.
+- **OCR misreads or the CDN is unreachable** → text box is filled for review with a warning, or an error leaves the existing text untouched; nothing is analyzed automatically.
 - **Malicious pasted HTML** → rendered as text by React; no `innerHTML` anywhere (tested).
 
 ## What Was Simplified and Why
