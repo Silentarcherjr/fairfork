@@ -11,7 +11,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
 
 ## Slices
 
-- [ ] **1. Paste an offer and see its fine print highlighted with exact quotes**
+- [x] **1. Paste an offer and see its fine print highlighted with exact quotes**
   Becomes usable: The page opens with a labeled fictional offer; "Analyze offer" highlights trial, price, period, auto-renewal, cancellation/refund and pressure cues in the original text, with a terms card showing each quote or "Not found in the text".
   Why now: This is the first half of the kernel (cited fine print) and it bootstraps the project, the frozen data contracts and the look every later slice builds on.
   PRD ref: `prd.md > The Core Journey` (steps 1–3), `prd.md > Fine-print extraction`, `prd.md > Look and Feel`
@@ -21,7 +21,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Open the app, click "Analyze offer" on the example, then paste a different offer text; check that the highlighted words match the terms card and that missing items say "Not found in the text".
   Commit: `Add cited fine-print extraction with highlighted evidence`
 
-- [ ] **2. See the true cost over 1/3/6/12 months**
+- [x] **2. See the true cost over 1/3/6/12 months**
   Becomes usable: A timeline shows the first charge date (from an editable start date) and every charge plus the total for the chosen horizon, with assumptions written out; unknown price shows "Unknown".
   Why now: Turns the cited terms into the money consequence — the second step of the kernel — and the ranking in slice 3 needs these costs.
   PRD ref: `prd.md > True cost timeline`, `prd.md > The Core Journey` (step 4)
@@ -31,7 +31,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Change the start date and switch between 1, 3, 6 and 12 months; edit the price in the text to $29.99, re-analyze, and confirm the totals change.
   Commit: `Add billing timeline and horizon cost`
 
-- [ ] **3. Compare with verified real plans and watch the best fit change**
+- [x] **3. Compare with verified real plans and watch the best fit change**
   Becomes usable: A comparison board shows "Your offer" plus Copilot Pro, Claude Pro (monthly and annual) and Devin/Windsurf Pro with source links and "Verified on" dates; budget and must-haves (IDE integration, annual billing, cancel-anytime monthly) re-rank into Best fit / Can't confirm / Doesn't meet your needs with reasons.
   Why now: This is the distinctive part of the kernel (verified alternatives + explained choice); it needs slices 1–2's terms and costs.
   PRD ref: `prd.md > Verified alternatives catalog`, `prd.md > Preferences and explained ranking`, `prd.md > The Core Journey` (steps 5–7)
@@ -41,7 +41,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Tick "Annual billing", then "IDE integration", then set a budget of $5; watch the Best fit badge and the reasons change, and confirm "No option meets all your requirements" appears when nothing fits. Click a source link.
   Commit: `Add verified alternatives and explained ranking`
 
-- [ ] **4. Works on a phone, by keyboard, and under awkward input**
+- [x] **4. Works on a phone, by keyboard, and under awkward input**
   Becomes usable: The page reads well at 360 px in the PRD's mobile order, all controls work by keyboard, empty/unrecognized input shows the planned states, and malicious HTML stays inert.
   Why now: The full journey exists; this hardens it for judges and the recording without adding scope.
   PRD ref: `prd.md > States and Boundaries`, `prd.md > Screens and Layout`
@@ -51,7 +51,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Open the app on a narrow window or phone, paste an empty box and some nonsense text, and try the page using only the keyboard.
   Commit: `Harden states, mobile layout and accessibility`
 
-- [ ] **5. Anyone can run it from the repo or open it at a public URL**
+- [x] **5. Anyone can run it from the repo or open it at a public URL**
   Becomes usable: README with what/why/how to run/limitations, MIT LICENSE, and a GitHub Pages workflow that builds the app under `/fairfork/`.
   Why now: The submission needs a repo judges can understand and a free way to try it; the optional deploy is prepared last so it ships the finished app.
   PRD ref: `prd.md > What We're Building`
@@ -83,3 +83,8 @@ Reflection:
 Activity mode: 
 
 ## Revisions
+- Slices 1–3 were implemented in parallel by subagents against the frozen `src/types` contracts and verified together (74/74 tests, `npm run build`, browser check of the example offer and ranking), then committed as three slice commits grouped by file; intermediate commits were not built individually — parallelization made per-slice builds of `App.tsx` impossible.
+- Catalog re-verification found Claude Pro's IDE support verbatim on an official support page, so the "IDE integration" must-have no longer flips the winner (Copilot was already cheapest); it now moves Devin Pro to "Can't confirm". The demo flip relies on "Annual billing" (Copilot Pro → Claude Pro annual) and the budget.
+- Slice 4 was built while the early checkpoint was pending (it only hardened existing behavior). QA found and fixed: false pressure cues ("only 2 seats per account", "No hurry"), "$16/month billed annually" read as monthly billing, slow parsing on very large input (now capped at 20,000 characters), and an offer with unknown cost being crowned Best fit (now "Can't confirm"). Introductory prices remain a documented limitation.
+- Slice 5's live URL can only be verified after the public repo is pushed and Pages is enabled in `6-ship`; locally `npm run build && vite preview` serves the app at `/fairfork/`.
+
