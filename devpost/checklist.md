@@ -81,6 +81,16 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Paste a Spanish offer, check the ledger, click Copy receipt and paste it somewhere.
   Commit: `Add Spanish offers, unknowns ledger, copy receipt and catalog tiers`
 
+- [ ] **8. Real terms and questions to ask before paying**
+  Becomes usable: "Try real terms" analyzes verbatim official quotes; each unknown comes with a question to send the provider.
+  Why now: Raise Potential Impact (demonstrated on real text) and Innovation (unknowns become actions) before the audit.
+  PRD ref: `prd.md > Try real terms`, `prd.md > Ask before you pay`
+  Spec ref: `spec.md > Push-to-10 additions`
+  Build: `realTerms.ts`, question templates, UI controls, tests.
+  Verify (mechanical): `npm test`, `npm run build`, browser check of both features.
+  Learner check: Click "Try real terms", then open "What nobody told you" and copy a question.
+  Commit: `Add real-terms example and questions to ask before paying`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 3 (full core journey: cited terms → cost → ranking flip), where feedback can still reshape slices 4–5

@@ -68,6 +68,12 @@ Source: learner, push-to-10 pass ("procede, tenemos que llevarlo lo más alto qu
 ### Copy receipt
 - [ ] A "Copy receipt" button copies a plain-text receipt (offer cost, assumptions, best fit and reasons, source links, verified date) to the clipboard and confirms "Copied".
 
+### Try real terms
+- [ ] A "Try real terms" control loads a text made only of verbatim quotes from one catalog plan's official pages, labeled with the provider pages and verification date, and analyzes it like any offer.
+
+### Ask before you pay
+- [ ] Every unknown in the ledger has a concrete, copyable question for the provider (deterministic templates, no AI), also included in "Copy receipt".
+
 ### True cost timeline
 Source: `scope.md > What "Working" Looks Like`.
 - [ ] With "7-day trial, then $19.99/month, renews automatically" and start date D, the first charge is shown on D + 7 days, labeled with the assumption ("assuming you don't cancel").

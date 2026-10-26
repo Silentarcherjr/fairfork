@@ -95,6 +95,8 @@ PRD ref: `prd.md > Screens and Layout`.
 - **Spanish in `parseOffer`**: Spanish phrase lists for trial, price (incl. "17 $", "US$"), period ("al mes", "/mes", "mensual", "al año", "anual"), auto-renewal, cancellation, refund, pressure cues; same evidence rules. Implements `prd.md > Spanish offers`.
 - **`src/lib/unknowns.ts`** (`collectUnknowns(terms, alternatives)`) and `UnknownsLedger` component. Implements `prd.md > Unknowns ledger ("What nobody told you")`.
 - **`src/lib/receiptText.ts`** (`buildReceiptText(...)`) + "Copy receipt" button using `navigator.clipboard.writeText` with a textarea fallback. Implements `prd.md > Copy receipt`.
+- **`src/lib/realTerms.ts`** (`buildRealTermsText(alt)`) joins a plan's verbatim catalog quotes with their URLs for the "Try real terms" control. Implements `prd.md > Try real terms`.
+- **Questions** in `src/lib/unknowns.ts` (`questionFor(item)`) render in `UnknownsLedger` and `buildReceiptText`. Implements `prd.md > Ask before you pay`.
 - **Catalog tiers** in `src/data/alternatives.ts` with `docs/sources.md` entries.
 
 ### App shell — `src/App.tsx`, `src/main.tsx`
