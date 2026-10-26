@@ -26,7 +26,7 @@ Built for the Devpost **Build With AI: Basics** hackathon (October 2026).
 9. **Copy receipt.** Copy a plain-text receipt (cost, assumptions, best fit, sources) to share before you decide.
 10. **Explained choice.** Set a monthly budget and must-haves (IDE integration, annual billing, cancel-anytime monthly). Options are sorted into **Best fit**, **Can't confirm** (a requirement we could not verify — *not verified* is not the same as *doesn't have it*) and **Doesn't meet your needs**, each with a written reason.
 
-Nothing you paste is stored or sent anywhere: the app runs entirely in your browser, with no login, no server and no API keys. The only network request is optional: the first time you use the screenshot import, the OCR engine and its English model (~10–15 MB) are downloaded from the jsDelivr CDN — your image itself never leaves the browser.
+Your pasted offer text and screenshots are processed in your browser; FairFork does not upload or store them, and it requires no login, application backend or API key. The page loads fonts from Google Fonts. If you use screenshot import, the OCR engine and its English model (~10–15 MB on first use) are fetched from third-party CDN resources. These external resource requests do not contain the offer text or image; the screenshot itself remains in your browser.
 
 ## Run it locally
 
