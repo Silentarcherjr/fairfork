@@ -1,0 +1,12 @@
+# Personal learning context stays out of commits by default
+/devpost/learner-profile.md
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+node_modules/
+dist/
+.DS_Store
+*.tsbuildinfo
