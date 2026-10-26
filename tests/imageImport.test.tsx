@@ -35,6 +35,10 @@ describe('Screenshot import (beta)', () => {
     expect((screen.getByLabelText(/paste the offer text/i) as HTMLTextAreaElement).value).toBe(before);
   });
 
+  it('re-joins price digits split by OCR', () => {
+    expect(normalizeOcrText('$1 0 usD\nper user / month')).toBe('$10 USD\nper user / month');
+  });
+
   it('normalizes OCR text without changing words', () => {
     expect(normalizeOcrText('  Only   3 spots   left\n\n “FREE” trial ’ok’ ')).toBe('Only 3 spots left\n"FREE" trial \'ok\'');
   });

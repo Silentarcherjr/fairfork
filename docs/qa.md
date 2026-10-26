@@ -111,3 +111,17 @@ ADV › "fuzz: parseOffer on ~200 seeded random/garbage strings" (seed 20261026,
 | Keyboard: Tab reaches controls; focused input shows 3 px petrol outline | Pass |
 | Desktop: Analyze example → $239.88 / 12 months; "Annual billing" flips Best fit to Claude Pro annual | Pass |
 | Three feature states visually distinct (✓ Yes solid, ✕ No struck, ? Not verified dashed) | Pass (screenshot) |
+
+## Screenshot import (beta) — real-screenshot test (2026-10-26)
+
+Real tesseract.js OCR on screenshots captured in the built-in browser, then `parseOffer`:
+
+| Screenshot | OCR of the price | Parsed price / period | Notes |
+|---|---|---|---|
+| Synthetic offer (light background, 28 px Arial) | correct | $15.99 / month, 14-day trial, 2 cues → $191.88 over 12 months | "AI" misread as "Al" |
+| GitHub Copilot plans — Pro card (dark) | "$1 0 usD" | **$10 / month** ✔ (after fixes) | split digits re-joined; "$15 monthly credits" no longer wins |
+| GitHub Copilot plans — Free card (dark) | "$0" → "SO" | not found | nothing invented |
+| Devin pricing — Pro card (light) | large "$20" not read | not found | OCR misses very large display digits |
+| Claude pricing (Spanish locale) | "17 $" → "174%" | not found ✔ (was **$174** before the fix) | English-only parser; percentages never parsed as prices |
+
+Fixes from this test: percentages are never prices; "credits" allowances are de-prioritized; "per user / month" counts as a period; OCR text re-joins split price digits. Result: no invented prices on any screenshot; large display prices on some pages are still missed. The feature stays labeled **beta** and never analyzes automatically.

@@ -340,3 +340,20 @@ describe('fuzz: parseOffer on ~200 seeded random/garbage strings', () => {
     expect(performance.now() - t0).toBeLessThan(1000);
   });
 });
+
+describe('Real-screenshot OCR text (copied from tesseract output on official pricing pages)', () => {
+  it('Copilot: "$10 USD per user / month" beats "$15 monthly total credits"', () => {
+    const t = parseOffer('Pro\n$10 USD\nper user / month\nv $15 monthly total credits for Pro');
+    expect(t.price.status === 'found' && t.price.value).toEqual({ amountMinor: 1000, currency: 'USD' });
+    expect(t.billingPeriod.status === 'found' && t.billingPeriod.value).toBe('month');
+  });
+
+  it('Claude (Spanish, OCR misread "17 $" as "174%"): no invented price', () => {
+    const t = parseOffer('Free Pro\n0$ 174%\nPor mes con descuento');
+    expect(t.price.status).toBe('not_found');
+  });
+
+  it('a percentage is never a price', () => {
+    expect(parseOffer('Save $ 20% today').price.status).toBe('not_found');
+  });
+});

@@ -3,13 +3,20 @@
 
 export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
-/** Tidies OCR output without changing its words: unify quotes, collapse runs of spaces, drop blank lines. */
+/** Tidies OCR output: unify quotes, collapse spaces, drop blank lines, re-join split price digits. */
 export function normalizeOcrText(raw: string): string {
   return raw
     .replace(/[‘’]/g, "'")
     .replace(/[“”]/g, '"')
     .split('\n')
-    .map((line) => line.replace(/[ \t]+/g, ' ').trim())
+    .map((line) =>
+      line
+        .replace(/[ \t]+/g, ' ')
+        // Large price digits are often split by OCR: "$1 0 usD" -> "$10 USD".
+        .replace(/([$€£])\s?(\d) (\d)(?=\s|$)/g, '$1$2$3')
+        .replace(/(\d)\s?(usd|eur|gbp)\b/gi, (_m, d: string, code: string) => `${d} ${code.toUpperCase()}`)
+        .trim(),
+    )
     .filter((line) => line.length > 0)
     .join('\n');
 }

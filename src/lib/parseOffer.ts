@@ -134,7 +134,7 @@ const SYMBOL_CURRENCY: Record<string, string> = { US$: 'USD', $: 'USD', '€': '
 
 // Period phrase directly after a price, e.g. "/month", " per year", " each month", " monthly".
 const TIED_PERIOD_RE =
-  /^\s*(?:(?:\/\s?|per\s+|each\s+|every\s+|a\s+)(month|mo|year|yr)\b|(monthly)\b|(annually|yearly|per\s+annum)\b)/i;
+  /^\s*(?:(?:per|\/)\s*(?:user|seat|member)\s*)?(?:(?:\/\s?|per\s+|each\s+|every\s+|a\s+)(month|mo|year|yr)\b|(monthly)\b|(annually|yearly|per\s+annum)\b)/i;
 
 const MONTH_RE = /\/\s?(?:month|mo)\b|\bper\s+month\b|\beach\s+month\b|\bevery\s+month\b|\bmonthly\b/i;
 const YEAR_RE =
@@ -194,6 +194,9 @@ function priceCandidates(text: string, sents: Span[]): PriceCandidate[] {
     if (sent && /\b(renew|renews|then|billed|after|charged)\b/i.test(text.slice(sent.start, sent.end))) score += 2;
     if (amountMinor === 0) score -= 5;
     if (/^\s*(?:due\s+)?(?:today|now)\b/i.test(after)) score -= 20;
+    // "17%" or an OCR'd "17 $ … 174%" is a percentage, not a price; "$15 monthly credits" is an allowance.
+    if (/^\s?%/.test(after)) score -= 20;
+    if (/^\s*(?:monthly\s+|per\s+month\s+)?(?:total\s+)?(?:usage\s+)?credits?\b/i.test(after)) score -= 15;
     out.push({ amountMinor, currency, span: { start, end }, period, score });
   }
   return out;
