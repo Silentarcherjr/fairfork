@@ -1,5 +1,40 @@
+import { useEffect, useRef, useState } from 'react';
 import type { UnknownItem } from '../lib/unknowns';
-import { groupUnknowns } from '../lib/unknowns';
+import { groupUnknowns, questionFor } from '../lib/unknowns';
+import { copyText } from './clipboard';
+
+/** The provider question for one unknown, with its own copy button and live feedback. */
+function AskQuestion({ item }: { item: UnknownItem }) {
+  const question = questionFor(item);
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
+  const timer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const onCopy = async () => {
+    const ok = await copyText(question);
+    window.clearTimeout(timer.current);
+    setState(ok ? 'copied' : 'failed');
+    timer.current = window.setTimeout(() => setState('idle'), ok ? 2000 : 4000);
+  };
+  return (
+    <div className="ask">
+      <q className="ask__q">{question}</q>
+      <span className="ask__actions">
+        <button
+          type="button"
+          className="ask__btn"
+          onClick={() => void onCopy()}
+          aria-label={`Copy question about ${item.fact} for ${item.option}`}
+        >
+          Copy question
+        </button>
+        <span className="ask__status" aria-live="polite">
+          {state === 'copied' && 'Copied ✓'}
+          {state === 'failed' && 'Couldn’t copy — select the question instead'}
+        </span>
+      </span>
+    </div>
+  );
+}
 
 type Props = { items: UnknownItem[]; analyzed: boolean };
 
@@ -24,6 +59,7 @@ export function UnknownsLedger({ items, analyzed }: Props) {
         <h2 id="ledger-heading" className="section-title">
           What nobody told you
         </h2>
+        <p className="ledger__kicker">Ask before you pay — each gap comes with a question to send the provider.</p>
         <p className="ledger__count">
           {n === 0
             ? 'Every fact we compare was stated or verified.'
@@ -58,6 +94,7 @@ export function UnknownsLedger({ items, analyzed }: Props) {
                         </>
                       ) : null}
                     </span>
+                    <AskQuestion item={it} />
                   </li>
                 ))}
               </ul>

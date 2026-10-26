@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { buildReceiptText, leader, switchDifferenceMinor, RECEIPT_WIDTH } from '../src/lib/receiptText';
+import { buildReceiptText, leader, switchDifferenceMinor, RECEIPT_WIDTH, MAX_RECEIPT_QUESTIONS } from '../src/lib/receiptText';
+import { collectUnknowns, questionFor } from '../src/lib/unknowns';
 import { parseOffer } from '../src/lib/parseOffer';
 import { calculateBillingTimeline } from '../src/lib/billing';
 import { buildCandidates, rankOptions } from '../src/lib/ranking';
@@ -36,7 +37,7 @@ describe('buildReceiptText', () => {
     const { receipt, rankResult } = receiptFor(EXAMPLE_OFFER);
     const lines = receipt.split('\n');
     expect(lines.length).toBeGreaterThanOrEqual(15);
-    expect(lines.length).toBeLessThanOrEqual(30);
+    expect(lines.length).toBeLessThanOrEqual(40);
     expect(receipt).toMatch(/Free trial \.+ 7 days/);
     expect(receipt).toMatch(/12 charges × \$19\.99 \.+ \$239\.88/);
     expect(receipt).toMatch(/First charge \.+ 2026-11-08/);
@@ -84,5 +85,29 @@ describe('buildReceiptText', () => {
     expect(switchDifferenceMinor(null, rankResult.bestFit)).toBeNull();
     expect(switchDifferenceMinor(timeline, { ...rankResult.bestFit!, isUserOffer: true })).toBeNull();
     expect(switchDifferenceMinor(timeline, rankResult.bestFit)).toBe(23988 - rankResult.bestFit!.horizonCostMinor!);
+  });
+
+  it('"Ask before you pay" lists questions about your offer and the best fit only, capped', () => {
+    const { receipt, rankResult } = receiptFor(EXAMPLE_OFFER);
+    expect(receipt).toContain('ASK BEFORE YOU PAY');
+    const section = receipt.split('ASK BEFORE YOU PAY\n')[1].split('\nCurated catalog')[0];
+    const qLines = section.split('\n').filter((l) => l.startsWith('- ') && !l.startsWith('- https'));
+    const best = ALTERNATIVES.find((a) => a.id === rankResult.bestFit!.alternativeId)!;
+    const bestLabel = `${best.provider} ${best.plan}`;
+    const expected = collectUnknowns(parseOffer(EXAMPLE_OFFER), ALTERNATIVES).filter(
+      (u) => u.option === 'Your offer' || u.option === bestLabel,
+    );
+    const shown = qLines.filter((l) => !l.includes('more in'));
+    expect(shown.length).toBe(Math.min(expected.length, MAX_RECEIPT_QUESTIONS));
+    for (const u of expected.slice(0, MAX_RECEIPT_QUESTIONS)) expect(section).toContain(`- ${u.option}: ${questionFor(u)}`);
+    for (const l of shown) expect(l.startsWith('- Your offer:') || l.startsWith(`- ${bestLabel}:`)).toBe(true);
+  });
+
+  it('caps the questions and points to the ledger for the rest', () => {
+    const { receipt } = receiptFor('hello world, nothing here');
+    const section = receipt.split('ASK BEFORE YOU PAY\n')[1].split('\nCurated catalog')[0];
+    const shown = section.split('\n').filter((l) => l.startsWith('- ') && !l.startsWith('- https') && !l.includes('more in'));
+    expect(shown.length).toBe(MAX_RECEIPT_QUESTIONS);
+    expect(section).toMatch(/…and \d+ more in "What nobody told you"/);
   });
 });

@@ -89,3 +89,33 @@ export function groupUnknowns(items: UnknownItem[]): { option: string; items: Un
   }
   return [...groups.entries()].map(([option, list]) => ({ option, items: list }));
 }
+
+/** Deterministic, copyable question to ask the provider about an unknown. */
+export function questionFor(item: UnknownItem): string {
+  const plan = item.option === USER_OFFER_LABEL ? 'this plan' : item.option;
+  if (item.detail === SOURCES_CONFLICT) {
+    return `Your terms and help docs disagree on refunds for ${plan} — which applies to me?`;
+  }
+  switch (item.fact) {
+    case 'Refund policy':
+      return `If I cancel ${plan}, can I get a refund — and within how many days?`;
+    case 'Free trial':
+      return `Is there a free trial for ${plan}, and does it convert to a paid plan automatically?`;
+    case 'Auto-renewal':
+      return `Does ${plan} renew automatically, and how far in advance do you remind me?`;
+    case 'Cancellation terms':
+      return `How do I cancel ${plan}, and does access continue until the end of the billing period?`;
+    case 'Price':
+      return `What is the exact price, billing period and currency for ${plan}, including taxes?`;
+    case 'Billing period':
+      return `Is ${plan} billed monthly or yearly, and on what date is the first charge?`;
+    case 'IDE integration':
+      return `Does ${plan} include IDE/editor integration (e.g. VS Code, JetBrains)?`;
+    case 'Annual billing':
+      return `Can I pay for ${plan} annually, and at what price?`;
+    case 'Cancel-anytime monthly':
+      return `Can I pay for ${plan} monthly and cancel at any time?`;
+    default:
+      return `Can you confirm the ${item.fact.toLowerCase()} for ${plan} in writing?`;
+  }
+}

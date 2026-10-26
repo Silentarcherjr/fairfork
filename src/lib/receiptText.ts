@@ -4,7 +4,9 @@ import type { RankResult, RankedCandidate } from '../types/ranking';
 import type { OfferTerms } from '../types/terms';
 import { ALTERNATIVES } from '../data/alternatives';
 import { formatMoney } from './money';
-import { collectUnknowns } from './unknowns';
+import { USER_OFFER_LABEL, alternativeLabel, collectUnknowns, questionFor } from './unknowns';
+
+export const MAX_RECEIPT_QUESTIONS = 6;
 
 export const RECEIPT_WIDTH = 46;
 
@@ -113,9 +115,21 @@ export function buildReceiptText({
     }
   }
 
-  const unknownCount = collectUnknowns(terms, alternatives).length;
+  const unknowns = collectUnknowns(terms, alternatives);
+  const unknownCount = unknowns.length;
   out.push(rule);
   out.push(`Unknowns: ${unknownCount} ${unknownCount === 1 ? 'fact' : 'facts'} not stated or not verified`);
+
+  // Ask before you pay: questions about the best fit and your own offer.
+  const bestAlt = best && !best.isUserOffer ? alternatives.find((a) => a.id === best.alternativeId) : undefined;
+  const askAbout = new Set<string>([USER_OFFER_LABEL, ...(bestAlt ? [alternativeLabel(bestAlt)] : [])]);
+  const questions = unknowns.filter((u) => askAbout.has(u.option)).map((u) => ({ option: u.option, q: questionFor(u) }));
+  if (questions.length > 0) {
+    out.push('ASK BEFORE YOU PAY');
+    for (const { option, q } of questions.slice(0, MAX_RECEIPT_QUESTIONS)) out.push(`- ${option}: ${q}`);
+    const more = questions.length - MAX_RECEIPT_QUESTIONS;
+    if (more > 0) out.push(`- …and ${more} more in "What nobody told you"`);
+  }
   if (sources.length > 0) {
     out.push('Sources:');
     for (const s of sources) out.push(`- ${s}`);

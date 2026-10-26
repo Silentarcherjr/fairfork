@@ -1,5 +1,7 @@
 import { MAX_INPUT_CHARS } from '../lib/parseOffer';
+import { useState } from 'react';
 import { ImageImport } from './ImageImport';
+import { RealTermsLabel, type RealTermsInfo } from './RealTermsLabel';
 
 type Props = {
   text: string;
@@ -10,6 +12,11 @@ type Props = {
   onClear: () => void;
   isExample: boolean;
   onTryAnotherExample?: () => void;
+  /** Plans that can be loaded as verbatim real terms (id + visible label). */
+  realTermsOptions?: { id: string; label: string }[];
+  onTryRealTerms?: (id: string) => void;
+  /** Set while the text is a real plan's verbatim quotes. */
+  realTerms?: RealTermsInfo | null;
 };
 
 export function OfferInput({
@@ -21,8 +28,17 @@ export function OfferInput({
   onClear,
   isExample,
   onTryAnotherExample,
+  realTermsOptions = [],
+  onTryRealTerms,
+  realTerms = null,
 }: Props) {
   const isEmpty = text.trim().length === 0;
+  // Default to a plan that isn't already the cheapest, so the first comparison shows a real difference.
+  const [realId, setRealId] = useState(
+    (realTermsOptions.find((o) => o.id === 'devin-pro') ?? realTermsOptions[0])?.id ?? '',
+  );
+  const selectedReal = realTermsOptions.some((o) => o.id === realId) ? realId : realTermsOptions[0]?.id ?? '';
+  const describedBy = [isExample ? 'example-tag' : '', realTerms ? 'real-terms-label' : '', 'offer-hint'].filter(Boolean).join(' ');
   return (
     <form
       className="offer-input"
@@ -42,6 +58,7 @@ export function OfferInput({
           </span>
         )}
       </div>
+      {realTerms && <RealTermsLabel info={realTerms} />}
       <textarea
         maxLength={MAX_INPUT_CHARS}
         id="offer-text"
@@ -51,7 +68,7 @@ export function OfferInput({
         rows={7}
         spellCheck={false}
         placeholder="Paste the pricing or checkout text of a subscription offer…"
-        aria-describedby={isExample ? 'example-tag offer-hint' : 'offer-hint'}
+        aria-describedby={describedBy}
       />
       <div className="offer-input__controls">
         <div className="offer-input__date">
@@ -76,6 +93,23 @@ export function OfferInput({
             <button type="button" className="btn btn--link" onClick={onTryAnotherExample}>
               Try another example
             </button>
+          )}
+          {onTryRealTerms && realTermsOptions.length > 0 && (
+            <span className="real-try">
+              <label htmlFor="real-terms-plan" className="sr-only">
+                Real terms from
+              </label>
+              <select id="real-terms-plan" value={selectedReal} onChange={(e) => setRealId(e.target.value)}>
+                {realTermsOptions.map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.label}
+                  </option>
+                ))}
+              </select>
+              <button type="button" className="btn btn--ghost real-try__btn" onClick={() => onTryRealTerms(selectedReal)}>
+                Try real terms
+              </button>
+            </span>
           )}
         </div>
       </div>

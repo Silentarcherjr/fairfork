@@ -21,8 +21,10 @@ Built for the Devpost **Build With AI: Basics** hackathon (October 2026).
 4. **Verified alternatives.** A small, curated catalog — GitHub Copilot Pro and Pro+, Claude Pro (monthly and annual) and Max 5x, Devin (formerly Windsurf) Pro and Max — where each price, term and feature links to the official page and a verbatim quote, verified on 2026-10-26. See [`docs/sources.md`](docs/sources.md).
 5. **Screenshot import (beta).** Don't want to copy text? Import a screenshot of the offer: the text is read in your browser (OCR with tesseract.js) and placed in the box for you to check before analyzing — OCR can misread, so nothing is analyzed automatically.
 6. **What nobody told you.** One ledger lists every fact that isn't stated in your offer or couldn't be verified for a plan — unknown is not the same as "no".
-7. **Copy receipt.** Copy a plain-text receipt (cost, assumptions, best fit, sources) to share before you decide.
-8. **Explained choice.** Set a monthly budget and must-haves (IDE integration, annual billing, cancel-anytime monthly). Options are sorted into **Best fit**, **Can't confirm** (a requirement we could not verify — *not verified* is not the same as *doesn't have it*) and **Doesn't meet your needs**, each with a written reason.
+7. **Ask before you pay.** Every unknown comes with a concrete question to send the provider.
+8. **Try real terms.** Analyze a text made only of verbatim quotes from a plan's official pages — not a made-up example.
+9. **Copy receipt.** Copy a plain-text receipt (cost, assumptions, best fit, sources) to share before you decide.
+10. **Explained choice.** Set a monthly budget and must-haves (IDE integration, annual billing, cancel-anytime monthly). Options are sorted into **Best fit**, **Can't confirm** (a requirement we could not verify — *not verified* is not the same as *doesn't have it*) and **Doesn't meet your needs**, each with a written reason.
 
 Nothing you paste is stored or sent anywhere: the app runs entirely in your browser, with no login, no server and no API keys. The only network request is optional: the first time you use the screenshot import, the OCR engine and its English model (~10–15 MB) are downloaded from the jsDelivr CDN — your image itself never leaves the browser.
 
@@ -40,7 +42,7 @@ Open http://localhost:5173/fairfork/ and click **Analyze offer** on the pre-fill
 Other commands:
 
 ```bash
-npm test          # 206 unit, adversarial and UI tests (Vitest)
+npm test          # 226 unit, adversarial and UI tests (Vitest)
 npm run build     # type-check + production build into dist/
 npm run preview   # serve the production build
 ```

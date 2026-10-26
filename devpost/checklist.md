@@ -81,7 +81,7 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Paste a Spanish offer, check the ledger, click Copy receipt and paste it somewhere.
   Commit: `Add Spanish offers, unknowns ledger, copy receipt and catalog tiers`
 
-- [ ] **8. Real terms and questions to ask before paying**
+- [x] **8. Real terms and questions to ask before paying**
   Becomes usable: "Try real terms" analyzes verbatim official quotes; each unknown comes with a question to send the provider.
   Why now: Raise Potential Impact (demonstrated on real text) and Innovation (unknowns become actions) before the audit.
   PRD ref: `prd.md > Try real terms`, `prd.md > Ask before you pay`
@@ -122,3 +122,4 @@ Activity mode: prior practice + recap.
 - Design pass after the final review (learner approved): verdict strip, side-by-side comparison with sticky preferences, visual cost strip — the comparison started ~2,500 px down the page and the Best fit flip happened off screen.
 - Visual direction changed to "the marked-up contract" (highlighter yellow, red pen, receipt verdict, Archivo/IBM Plex) after research showed the original cream + serif + coral + Inter look is a common AI-design default; learner approved ("procede").
 - Push-to-10 slice verified together: 206/206 tests, build, and a Spanish offer in the browser (7 exact quotes, $191.88 over 12 months, comparison vs Copilot Pro); catalog now 6 verified plans (40 quotes re-checked verbatim); stricter number guard now rejects "$1.200" instead of misreading it as $1.20.
+- Slice 8 verified: 226/226 tests, build, browser check of "Try real terms" (Devin Pro: $240.00/12 mo, auto-renewal found in the verbatim terms) and ledger questions. Claude Pro is excluded from real terms because its verbatim quotes parse as the $17/mo annual-discount figure. The real-terms default is Devin Pro so the first comparison shows a real difference.

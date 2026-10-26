@@ -20,6 +20,8 @@ import { VerdictStrip } from './components/VerdictStrip';
 import { UnknownsLedger } from './components/UnknownsLedger';
 import { collectUnknowns } from './lib/unknowns';
 import { buildReceiptText } from './lib/receiptText';
+import { realTermsChoices } from './lib/realTerms';
+import type { RealTermsInfo } from './components/RealTermsLabel';
 
 const INITIAL_PREFS: Preferences = {
   maxMonthlyBudgetMinor: null,
@@ -36,6 +38,13 @@ export default function App() {
   const [prefs, setPrefs] = useState<Preferences>(INITIAL_PREFS);
   // The text that was analyzed is kept alongside its terms so evidence offsets always match.
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
+  // Set while the textarea holds a real plan's verbatim catalog quotes.
+  const [realInfo, setRealInfo] = useState<RealTermsInfo | null>(null);
+  const realChoices = useMemo(() => realTermsChoices(ALTERNATIVES), []);
+  const realOptions = useMemo(
+    () => realChoices.map((c) => ({ id: c.alt.id, label: `${c.alt.provider} ${c.alt.plan}` })),
+    [realChoices],
+  );
 
   const terms = analysis?.terms ?? null;
 
@@ -84,14 +93,32 @@ export default function App() {
     setScrollRequest((n) => n + 1);
   };
   const clear = () => {
+    setRealInfo(null);
     setText('');
     setIsExample(false);
     setAnalysis(null);
   };
   const loadSecondExample = () => {
     const next = text === SECOND_EXAMPLE_OFFER ? EXAMPLE_OFFER : SECOND_EXAMPLE_OFFER;
+    setRealInfo(null);
     setText(next);
     setIsExample(true);
+    setAnalysis({ text: next, terms: parseOffer(next) });
+    setScrollRequest((n) => n + 1);
+  };
+
+  const tryRealTerms = (id: string) => {
+    const choice = realChoices.find((c) => c.alt.id === id) ?? realChoices[0];
+    if (!choice) return;
+    const next = choice.realTerms.text;
+    setText(next);
+    setIsExample(false);
+    setRealInfo({
+      provider: choice.alt.provider,
+      plan: choice.alt.plan,
+      verifiedAt: choice.alt.verifiedAt,
+      sources: choice.realTerms.sources,
+    });
     setAnalysis({ text: next, terms: parseOffer(next) });
     setScrollRequest((n) => n + 1);
   };
@@ -157,6 +184,7 @@ export default function App() {
             onTextChange={(t) => {
               setText(t);
               setIsExample(false);
+              setRealInfo(null);
             }}
             startDate={startDate}
             onStartDateChange={(d) => setStartDate(d || todayISO())}
@@ -164,6 +192,9 @@ export default function App() {
             onClear={clear}
             isExample={isExample}
             onTryAnotherExample={loadSecondExample}
+            realTermsOptions={realOptions}
+            onTryRealTerms={tryRealTerms}
+            realTerms={realInfo}
           />
         </section>
 

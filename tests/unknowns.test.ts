@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { collectUnknowns, groupUnknowns, NOT_STATED, NOT_VERIFIED, SOURCES_CONFLICT } from '../src/lib/unknowns';
+import { collectUnknowns, groupUnknowns, questionFor, NOT_STATED, NOT_VERIFIED, SOURCES_CONFLICT } from '../src/lib/unknowns';
 import { parseOffer } from '../src/lib/parseOffer';
 import { ALTERNATIVES } from '../src/data/alternatives';
 import { EXAMPLE_OFFER } from '../src/data/exampleOffer';
@@ -124,5 +124,47 @@ describe('collectUnknowns', () => {
     const groups = groupUnknowns(collectUnknowns(emptyTerms, [{ ...fullAlt, trial: 'unknown' }]));
     expect(groups.map((g) => g.option)).toEqual(['Your offer', 'Acme Pro']);
     expect(groups[1].items).toHaveLength(1);
+  });
+});
+
+describe('questionFor', () => {
+  const q = (fact: string, option = 'Acme Pro', detail = NOT_VERIFIED) => questionFor({ option, fact, detail });
+
+  it('uses the plan name for catalog plans and "this plan" for your offer', () => {
+    expect(q('Free trial')).toBe('Is there a free trial for Acme Pro, and does it convert to a paid plan automatically?');
+    expect(q('Free trial', 'Your offer', NOT_STATED)).toBe(
+      'Is there a free trial for this plan, and does it convert to a paid plan automatically?',
+    );
+  });
+
+  it('has a concrete template for every fact the ledger can produce', () => {
+    expect(q('Refund policy')).toBe('If I cancel Acme Pro, can I get a refund — and within how many days?');
+    expect(q('Auto-renewal')).toBe('Does Acme Pro renew automatically, and how far in advance do you remind me?');
+    expect(q('Cancellation terms')).toBe('How do I cancel Acme Pro, and does access continue until the end of the billing period?');
+    expect(q('IDE integration')).toBe('Does Acme Pro include IDE/editor integration (e.g. VS Code, JetBrains)?');
+    expect(q('Annual billing')).toBe('Can I pay for Acme Pro annually, and at what price?');
+    expect(q('Cancel-anytime monthly')).toBe('Can I pay for Acme Pro monthly and cancel at any time?');
+    expect(q('Price')).toBe('What is the exact price, billing period and currency for Acme Pro, including taxes?');
+    expect(q('Billing period', 'Your offer', NOT_STATED)).toBe('Is this plan billed monthly or yearly, and on what date is the first charge?');
+  });
+
+  it('conflicting sources get the conflict question', () => {
+    expect(q('Refund policy', 'Acme Pro', SOURCES_CONFLICT)).toBe(
+      'Your terms and help docs disagree on refunds for Acme Pro — which applies to me?',
+    );
+  });
+
+  it('every real ledger item gets a non-generic question ending in "?"', () => {
+    const items = collectUnknowns(emptyTerms, ALTERNATIVES);
+    for (const it of items) {
+      const question = questionFor(it);
+      expect(question).toMatch(/\?$/);
+      expect(question).not.toContain('in writing');
+    }
+  });
+
+  it('is deterministic', () => {
+    const items = collectUnknowns(emptyTerms, ALTERNATIVES);
+    expect(items.map(questionFor)).toEqual(items.map(questionFor));
   });
 });
