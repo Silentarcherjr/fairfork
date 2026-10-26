@@ -91,6 +91,12 @@ PRD ref: `prd.md > Screenshot import (beta)`.
 `VerdictStrip` (new, `src/components/VerdictStrip.tsx`) reads the `Timeline` and `RankResult.bestFit`; difference = offer horizon cost − best-fit horizon cost, shown only when both are known and in USD, always phrased as "if you switch" with the start-date assumption. `ComparisonBoard` renders a responsive grid (≥ 1100 px: preferences sticky on the left, cards in columns); `OptionCard` folds terms/sources into `<details>`; the Best fit card animates position changes (FLIP, disabled under reduced motion). `CostTimeline` shows one bar per charge with the list in `<details>`.
 PRD ref: `prd.md > Screens and Layout`.
 
+### Push-to-10 additions
+- **Spanish in `parseOffer`**: Spanish phrase lists for trial, price (incl. "17 $", "US$"), period ("al mes", "/mes", "mensual", "al año", "anual"), auto-renewal, cancellation, refund, pressure cues; same evidence rules. Implements `prd.md > Spanish offers`.
+- **`src/lib/unknowns.ts`** (`collectUnknowns(terms, alternatives)`) and `UnknownsLedger` component. Implements `prd.md > Unknowns ledger ("What nobody told you")`.
+- **`src/lib/receiptText.ts`** (`buildReceiptText(...)`) + "Copy receipt" button using `navigator.clipboard.writeText` with a textarea fallback. Implements `prd.md > Copy receipt`.
+- **Catalog tiers** in `src/data/alternatives.ts` with `docs/sources.md` entries.
+
 ### App shell — `src/App.tsx`, `src/main.tsx`
 Holds state (text, analyzed terms, startDate, horizon, preferences) and wires the pure functions to components. Nothing persisted.
 

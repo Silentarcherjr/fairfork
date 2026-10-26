@@ -56,6 +56,18 @@ Source: learner request at the build checkpoint — copy-pasting offers is frict
 - [ ] A notice says "Text read from an image — check it against the screenshot before analyzing; OCR can misread." The example label disappears.
 - [ ] If reading fails or finds no text, a calm error appears and the existing text is untouched.
 
+### Spanish offers
+Source: learner, push-to-10 pass ("procede, tenemos que llevarlo lo más alto que se pueda").
+- [ ] Spanish offer text ("prueba gratis de 7 días", "$19.99 al mes", "17 $ al mes", "se renueva automáticamente", "cancela cuando quieras", "no reembolsable", "solo quedan 3 lugares") is extracted with exact quotes like English.
+- [ ] Mixed or unrecognized wording still shows "Not found in the text" — never guessed.
+
+### Unknowns ledger ("What nobody told you")
+- [ ] After analysis, one panel lists every fact that is not stated or not verified across your offer and the catalog plans (e.g. refund policy, trial, renewal, IDE support), each with which option it affects.
+- [ ] Nothing is listed as unknown if it was found or verified.
+
+### Copy receipt
+- [ ] A "Copy receipt" button copies a plain-text receipt (offer cost, assumptions, best fit and reasons, source links, verified date) to the clipboard and confirms "Copied".
+
 ### True cost timeline
 Source: `scope.md > What "Working" Looks Like`.
 - [ ] With "7-day trial, then $19.99/month, renews automatically" and start date D, the first charge is shown on D + 7 days, labeled with the assumption ("assuming you don't cancel").
@@ -92,6 +104,7 @@ Source: `scope.md > The Core Loop`.
 
 ## Product Decisions
 - Compare **Copilot Pro, Claude Pro, Devin/Windsurf Pro** — the three plans whose terms were verifiable on official pages (learner adopted the agent's recommendation). ChatGPT Plus, JetBrains AI and Cursor excluded: pages unreadable or no comparable plan.
+- Catalog extended with higher tiers verifiable on the same official pages (push-to-10 pass), each fact with a verbatim quote.
 - Must-haves: **budget, IDE integration, annual billing, cancel-anytime monthly** (learner adopted recommendation to add annual billing for a meaningful ranking flip).
 - **"Not verified" ≠ "doesn't have it"**: unverified options are kept in a separate "Can't confirm" group, never excluded silently and never crowned (learner adopted recommendation).
 - **The pasted offer competes in the ranking** as "Your offer", judged only by its own text (learner adopted recommendation), so the board answers "should I switch?".

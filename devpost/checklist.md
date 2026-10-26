@@ -71,6 +71,16 @@ Parallelization: after slice 1 freezes the contracts in `src/types/*`, the work 
   Learner check: Take a screenshot of any pricing text, click "Import from screenshot (beta)", check the text, then Analyze.
   Commit: `Add screenshot import (beta)`
 
+- [ ] **7. Push-to-10: Spanish offers, unknowns ledger, copy receipt, richer catalog, design nits**
+  Becomes usable: Spanish offers are analyzed with quotes; a "What nobody told you" panel lists every unknown; "Copy receipt" copies a shareable summary; more verified tiers make budget flips richer; hero shows the 3 steps.
+  Why now: Learner asked to raise every judging criterion after the final review.
+  PRD ref: `prd.md > Spanish offers`, `prd.md > Unknowns ledger ("What nobody told you")`, `prd.md > Copy receipt`
+  Spec ref: `spec.md > Push-to-10 additions`
+  Build: parser Spanish rules (Agent A), catalog tiers (Agent B), ledger + copy + design nits (Agent C); orchestrator integrates.
+  Verify (mechanical): `npm test`, `npm run build`, browser check of a Spanish offer, ledger, copy button, 360 px.
+  Learner check: Paste a Spanish offer, check the ledger, click Copy receipt and paste it somewhere.
+  Commit: `Add Spanish offers, unknowns ledger, copy receipt and catalog tiers`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 3 (full core journey: cited terms → cost → ranking flip), where feedback can still reshape slices 4–5
