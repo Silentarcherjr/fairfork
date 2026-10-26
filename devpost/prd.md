@@ -29,12 +29,14 @@ One page, top to bottom (no navigation, no other screens):
 - **Footer:** "About the data" — catalog is curated (not live search), dates of verification, prices may vary by country/taxes, not financial or legal advice.
 
 ## Look and Feel
-Source: learner brief (carried forward; not re-asked).
-- "Editorial decision lab": light paper-like background with deep black text.
-- **Coral** = pressure cues and money leaving your pocket; **petrol green** = neutral / better-fit alternative.
-- Editorial typography (a serif with character for headlines, clean sans for data); quotes from the offer shown as clipped "evidence" snippets.
-- Quick, sober transitions. No fake charts, no generic dashboard template, no stock AI-gradient look.
-- High contrast, keyboard-usable controls.
+Revised after research into "AI-generated design" tells (learner: "procede"); the original brief's cream + serif + coral direction matched the most common AI default.
+- **"The marked-up contract":** black ink on cool white paper; FairFork looks like what you'd do to fine print with a highlighter and a red pen.
+- **Highlighter yellow** is the single accent: detected terms get real marker-stroke highlights. **Red pen** marks pressure cues (wavy underline + margin note "pressure cue — not verified"). Petrol/green only for the Best fit verdict.
+- **The verdict is a printed receipt:** monospace lines with dotted leaders (FREE TRIAL …… 7 DAYS · 12 CHARGES × $19.99 · TOTAL …… $239.88) and a torn edge.
+- Typography: Archivo (condensed, heavy) for headlines; IBM Plex Sans for text; IBM Plex Mono for numbers, quotes and the receipt. No Inter, no Fraunces.
+- Fewer boxes and fewer all-caps eyebrows: hairline rules instead of cards-in-cards.
+- First screen: headline plus a small annotated sample of the fictional offer, so the value is clear before clicking.
+- Still: high contrast, keyboard-usable, reduced motion respected, no fake charts.
 
 ## Features and Behavior
 

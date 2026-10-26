@@ -50,14 +50,13 @@ Accepted by the learner ("procede") on the agent's recommendation.
 - Demo recording: record the deployed page in a desktop browser following `prd.md > The Core Journey`.
 
 ## Look and Feel
-Carried forward from `prd.md > Look and Feel`.
-- Tokens on `:root`: `--paper #F7F4EE`, `--ink #111111`, `--muted #5B5750`, `--coral #E4572E` (pressure / money out), `--petrol #0F5257` (neutral / best fit), `--line #DDD6CA`, `--unverified #8A8378` (dashed outlines for "not verified").
-- Typography: Fraunces for headlines and big numbers, Inter for body/data; tabular numerals for money.
-- Evidence quotes look like clipped newspaper snippets (thin border, slight offset shadow, small "from your text" label).
-- Three feature states must be distinguishable without color: ✓ solid, ✕ struck, ? dashed outline + "Not verified" text.
-- Transitions ≤ 200 ms, `prefers-reduced-motion` respected. No charts that aren't data; the timeline is a list/strip of real charge dates.
-- Copy tone: plain, calm, never accusatory ("Potential pressure cue — not verified").
-- Responsive from 360 px; mobile order per `prd.md > Screens and Layout`.
+Carried forward from `prd.md > Look and Feel` (revised direction "the marked-up contract").
+- Tokens on `:root`: `--paper #FCFCFA` (cool white), `--ink #0E0E0E`, `--muted #55595E`, `--rule #D9DBDD`, `--marker #FFE14D` (highlighter), `--marker-ink #6B5A00`, `--redpen #D0261C`, `--verdict #0B6B4F` (best fit), `--unverified #6E7378`.
+- Fonts (Google Fonts, system fallbacks): Archivo (wdth 75–100, wght 600–900) for headlines; IBM Plex Sans for body; IBM Plex Mono for money, quotes, receipt.
+- Highlights: `mark` drawn as a marker stroke (skewed yellow background gradient, slightly irregular edges via `border-radius`); pressure cues: `text-decoration: underline wavy var(--redpen)` + margin note.
+- Receipt: `VerdictStrip` in mono with dotted leaders and a zigzag torn edge (CSS mask/gradient), no images.
+- Fewer containers: sections separated by hairline rules; uppercase tracked labels only where truly needed.
+- Transitions ≤ 250 ms; `prefers-reduced-motion` respected. Responsive from 360 px.
 
 ## Components
 

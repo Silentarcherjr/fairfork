@@ -9,9 +9,9 @@ Built for the Devpost **Build With AI: Basics** hackathon (October 2026).
 - **Live demo:** https://silentarcherjr.github.io/fairfork/
 - **License:** [MIT](LICENSE)
 
-| The verdict and the true cost | Side-by-side comparison with your requirements |
-|---|---|
-| ![Verdict strip and cost timeline for the fictional example offer](docs/screenshots/verdict-and-cost.jpg) | ![Best fit, verified plans and preferences](docs/screenshots/comparison.jpg) |
+| The receipt: what the offer really costs | Your text, marked up | Pick what matters, see the best fit |
+|---|---|---|
+| ![Receipt-style verdict for the fictional example offer](docs/screenshots/receipt.jpg) | ![Fine print highlighted with exact quotes and a pressure cue](docs/screenshots/marked-up.jpg) | ![Annual billing ticked: Claude Pro annual becomes Best fit](docs/screenshots/comparison.jpg) |
 
 ## What it does
 

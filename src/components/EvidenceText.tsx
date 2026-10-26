@@ -74,7 +74,7 @@ export function EvidenceText({ text, terms }: Props) {
 
   return (
     <figure className="evidence-text">
-      <figcaption className="eyebrow">Your text, with what we found highlighted</figcaption>
+      <figcaption className="evidence-text__caption">Your text, marked up</figcaption>
       <p className="evidence-text__body">{parts}</p>
       <ul className="legend" aria-label="Highlight legend">
         <li>

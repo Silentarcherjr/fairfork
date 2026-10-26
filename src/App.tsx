@@ -83,12 +83,29 @@ export default function App() {
       <a className="skip-link" href="#results">
         Skip to results
       </a>
-      <header className="masthead">
-        <p className="wordmark">
-          Fair<span>Fork</span>
-        </p>
-        <h1 className="masthead__headline">What are you really agreeing to?</h1>
-        <p className="masthead__tagline">Know the true cost. Find a better choice.</p>
+      <header className={`masthead${analysis ? ' masthead--compact' : ''}`}>
+        <div className="masthead__copy">
+          <p className="wordmark">
+            Fair<span>Fork</span>
+          </p>
+          <h1 className="masthead__headline">What are you really agreeing to?</h1>
+          <p className="masthead__tagline">Know the true cost. Find a better choice.</p>
+        </div>
+        {!analysis && (
+          <figure className="sample" aria-label="Annotated sample of a fictional offer">
+            <figcaption className="sample__label">Example — fictional offer</figcaption>
+            <p className="sample__text">
+              Start your <span className="sample__mark">FREE 7-day trial</span> today!{' '}
+              <span className="sample__pressure">Only 3 spots left.</span> Then $19.99 each month.
+            </p>
+            <p className="sample__note sample__note--marker">
+              <span aria-hidden="true">→</span> = $239.88 in your first year
+            </p>
+            <p className="sample__note sample__note--red">
+              <span aria-hidden="true">↑</span> pressure cue — not verified
+            </p>
+          </figure>
+        )}
       </header>
 
       <main>
@@ -117,27 +134,26 @@ export default function App() {
                   results.
                 </p>
               )}
-              <div ref={verdictRef} className="verdict-anchor">
-                <VerdictStrip timeline={timeline} result={rankResult} horizon={horizon} startDate={startDate} />
-              </div>
-              <div className="analysis">
+              <div className="results-top">
+                <div ref={verdictRef} className="verdict-anchor">
+                  <VerdictStrip timeline={timeline} result={rankResult} horizon={horizon} startDate={startDate} />
+                </div>
                 <div className="analysis__cost">
                   <CostTimeline timeline={timeline} horizon={horizon} onHorizonChange={setHorizon} startDate={startDate} />
-                  <div className="card pressure-card">
-                    <PressureCues cues={analysis.terms.pressureCues} />
-                  </div>
                 </div>
-                <div className="analysis__text">
-                  <section className="card evidence-card" aria-label="Your offer text with highlights">
-                    <EvidenceText text={analysis.text} terms={analysis.terms} />
-                  </section>
+              </div>
+              <div className="analysis">
+                <section className="analysis__text evidence-card" aria-label="Your offer text with highlights">
+                  <EvidenceText text={analysis.text} terms={analysis.terms} />
+                  <PressureCues cues={analysis.terms.pressureCues} />
+                </section>
+                <div className="analysis__terms">
                   <TermsCard terms={analysis.terms} />
                 </div>
               </div>
             </>
           ) : (
             <div className="empty-results">
-              <p className="empty-results__eyebrow">Results appear here</p>
               <p className="empty-results__title">
                 Click <strong>Analyze offer</strong> to see the fine print, every charge date, and the true cost.
               </p>

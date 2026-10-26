@@ -100,3 +100,4 @@ Activity mode: prior practice + recap.
 - Slice 5's live URL can only be verified after the public repo is pushed and Pages is enabled in `6-ship`; locally `npm run build && vite preview` serves the app at `/fairfork/`.
 - Added slice 6 (screenshot import, beta) after the learner tried the app and found copy-pasting impractical; URL import stays deferred (needs a server, CORS/SSRF, JS-rendered pricing pages). scope/PRD/spec updated with the learner's agreement ("agrega, nada perdemos").
 - Design pass after the final review (learner approved): verdict strip, side-by-side comparison with sticky preferences, visual cost strip — the comparison started ~2,500 px down the page and the Best fit flip happened off screen.
+- Visual direction changed to "the marked-up contract" (highlighter yellow, red pen, receipt verdict, Archivo/IBM Plex) after research showed the original cream + serif + coral + Inter look is a common AI-design default; learner approved ("procede").

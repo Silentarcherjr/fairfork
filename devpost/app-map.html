@@ -34,7 +34,7 @@
 <body>
 <main>
   <h1>FairFork — App Map</h1>
-  <p class="sub">A compact guide to where things live. Snapshot of commit <code>62f4aa7</code> (26 Oct 2026); the code may drift after this.</p>
+  <p class="sub">A compact guide to where things live. Snapshot updated after the design pass (26 Oct 2026) (26 Oct 2026); the code may drift after this.</p>
 
   <h2>What the app is</h2>
   <p>A single web page that runs entirely in the browser. You paste (or import from a screenshot) a subscription offer; it highlights the fine print with exact quotes, computes the cost over 1/3/6/12 months, and ranks it against a small catalog of real plans verified on official pages. Four pure pieces decide every number; React components only display what they return.</p>
@@ -66,7 +66,7 @@
   <details><summary>Add or update a catalog plan</summary><p><code>src/data/alternatives.ts</code> — each fact needs an official <code>sourceUrl</code> and a verbatim <code>quote</code>; record it in <code>docs/sources.md</code>. <code>tests/catalog.test.ts</code> rejects facts without sources.</p></details>
   <details><summary>Recognize a new offer phrase</summary><p><code>src/lib/parseOffer.ts</code> — trial (<code>parseTrial</code>), price (<code>MONEY_RE</code>, <code>priceCandidates</code>), pressure cues (<code>SCARCITY_RES</code>, <code>URGENCY_RES</code>). Add the case to <code>tests/parseOffer.test.ts</code>.</p></details>
   <details><summary>Add a must-have requirement</summary><p><code>src/types/terms.ts</code> (<code>FeatureKey</code>, <code>FEATURE_LABELS</code>), then the feature in each plan in <code>alternatives.ts</code>; <code>PreferencesPanel</code> renders the labels automatically.</p></details>
-  <details><summary>Change the look</summary><p><code>src/styles/tokens.css</code> (colors, fonts) and <code>src/styles/app.css</code>.</p></details>
+  <details><summary>Change the look</summary><p><code>src/styles/tokens.css</code> (ink, highlighter, red pen, fonts) and <code>src/styles/app.css</code>. The receipt verdict is <code>src/components/VerdictStrip.tsx</code>.</p></details>
   <details><summary>Screenshot import (beta)</summary><p><code>src/lib/ocr.ts</code> (<code>readTextFromImage</code>, <code>normalizeOcrText</code>) and <code>src/components/ImageImport.tsx</code>. It only fills the text box; analysis stays a separate click.</p></details>
 
   <h2>A practice to reuse</h2>

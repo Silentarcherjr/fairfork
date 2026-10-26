@@ -1,23 +1,25 @@
+/* "The marked-up contract": black ink on cool white paper, a highlighter, a red pen. */
 :root {
-  --paper: #f7f4ee;
-  --paper-deep: #efeae0;
-  --card: #fffdf8;
-  --ink: #111111;
-  --muted: #5b5750;
-  --coral: #e4572e;
-  --coral-ink: #b8401d; /* AA text on paper */
-  --coral-wash: #fbe3da;
-  --petrol: #0f5257;
-  --petrol-wash: #dcebea;
-  --line: #ddd6ca;
-  --unverified: #8a8378;
-  --unverified-ink: #6b655c; /* AA text on paper */
+  --paper: #fcfcfa; /* cool white */
+  --paper-2: #f3f4f2; /* faint wash for inputs / hover */
+  --sheet: #ffffff; /* the receipt */
+  --ink: #0e0e0e;
+  --muted: #55595e; /* 6.8:1 on paper */
+  --rule: #d9dbdd;
+  --rule-strong: #0e0e0e;
 
-  --font-display: 'Fraunces', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --marker: #ffe14d; /* highlighter: background only; ink on marker ≈ 14.8:1 */
+  --marker-ink: #6b5a00; /* text in "marker" contexts, 6.6:1 on paper */
+  --redpen: #d0261c; /* pressure cues only; 5.1:1 on paper */
+  --verdict: #0b6b4f; /* Best fit only; 6.3:1 on paper, white on it 6.5:1 */
+  --verdict-wash: #e3f1ec;
+  --unverified: #6e7378; /* 4.7:1 on paper */
 
-  --radius: 4px;
-  --shadow-clip: 3px 3px 0 var(--line);
+  --font-display: 'Archivo', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+  --radius: 3px;
   --ease: cubic-bezier(0.2, 0, 0, 1);
   --dur: 160ms;
 
