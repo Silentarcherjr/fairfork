@@ -15,7 +15,7 @@ export function AboutData({ verifiedAt }: Props) {
         </li>
         <li>Prices may vary by country, and taxes may apply. Amounts are shown in US dollars.</li>
         <li>
-          Your offer is analyzed only from the text you paste, with simple English-phrase rules. Anything not found is
+          Your offer is analyzed only from the text you paste, using simple rules for common English and Spanish phrases. Anything not found is
           shown as unknown, never guessed.
         </li>
         <li>This is not financial or legal advice — it shows evidence and tradeoffs so you can decide.</li>
